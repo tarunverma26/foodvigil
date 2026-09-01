@@ -1,0 +1,140 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-[#050811] text-slate-900 font-sans;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+::-webkit-scrollbar-track {
+  background: #090e1c;
+}
+::-webkit-scrollbar-thumb {
+  background: #10b981;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #059669;
+}
+
+/* Frosted Glass Cards (High Contrast & Sharp Typography over 3D Parallax Scene) */
+.card-surface {
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 1.25rem;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.25), 0 8px 10px -6px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease-in-out;
+}
+.card-surface:hover {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.35), 0 8px 10px -6px rgba(0, 0, 0, 0.25);
+}
+
+.card-surface-dark {
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-radius: 1.25rem;
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
+  color: #f8fafc;
+}
+
+/* Semantic Badges */
+.badge-good {
+  @apply bg-emerald-50 text-emerald-800 border border-emerald-300 font-semibold;
+}
+.badge-attention {
+  @apply bg-amber-50 text-amber-800 border border-amber-300 font-semibold;
+}
+.badge-urgent {
+  @apply bg-rose-50 text-rose-800 border border-rose-300 font-semibold;
+}
+.badge-neutral {
+  @apply bg-slate-100 text-slate-700 border border-slate-300 font-medium;
+}
+
+/* Buttons */
+.btn-forest {
+  @apply bg-forest-900 hover:bg-forest-800 active:bg-forest-950 text-white font-semibold rounded-xl px-5 py-2.5 shadow-md transition-all duration-150 flex items-center justify-center gap-2;
+}
+
+.btn-secondary {
+  @apply bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-700 border border-slate-300 font-medium rounded-xl px-5 py-2.5 shadow-sm transition-all duration-150 flex items-center justify-center gap-2;
+}
+
+/* 3D Night Market Animations */
+@keyframes sway {
+  0% { transform: rotate(-3deg); }
+  100% { transform: rotate(3deg); }
+}
+
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  41% { opacity: 1; }
+  42% { opacity: 0.85; }
+  43% { opacity: 1; }
+  45% { opacity: 0.88; }
+  46% { opacity: 1; }
+}
+
+@keyframes steam {
+  0% { transform: translateY(0) scale(1); opacity: 0.6; }
+  50% { transform: translateY(-30px) scale(1.3); opacity: 0.3; }
+  100% { transform: translateY(-60px) scale(1.6); opacity: 0; }
+}
+
+@keyframes lightTrail {
+  0% { transform: translateX(0) scaleX(0.8); opacity: 0; }
+  20% { opacity: 0.8; }
+  80% { opacity: 0.8; }
+  100% { transform: translateX(120vw) scaleX(1.2); opacity: 0; }
+}
+
+@keyframes cloudDrift {
+  0% { transform: translateX(-5%); }
+  50% { transform: translateX(5%); }
+  100% { transform: translateX(-5%); }
+}
+
+.animate-lantern-sway {
+  animation: sway 4s ease-in-out infinite alternate;
+}
+
+.animate-neon-flicker {
+  animation: flicker 3.5s infinite;
+}
+
+.animate-steam-rise {
+  animation: steam 5.5s linear infinite;
+}
+
+.animate-light-trail {
+  animation: lightTrail 6s ease-in-out infinite;
+}
+
+.animate-cloud-drift {
+  animation: cloudDrift 20s ease-in-out infinite;
+}
+
+/* Neon Glow Utilities */
+.shadow-glow-amber {
+  box-shadow: 0 0 20px -3px rgba(245, 158, 11, 0.4);
+}
+.shadow-glow-teal {
+  box-shadow: 0 0 20px -3px rgba(6, 182, 212, 0.45);
+}
+.shadow-glow-neon {
+  box-shadow: 0 0 20px -3px rgba(239, 68, 68, 0.45);
+}
