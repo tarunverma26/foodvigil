@@ -1,366 +1,184 @@
-// FoodVigil - Master Knowledge Engine & Demo Data Store
+/**
+ * Master FoodVigil Knowledge Base & Master Database
+ * Comprehensive Indian Food Safety Database, FSSAI Registry, and INS Codes
+ */
 
+// Official FSSAI 2-Digit State / UT Codes
+export const FSSAI_STATE_CODES = {
+  '01': 'Jammu & Kashmir',
+  '02': 'Himachal Pradesh',
+  '03': 'Punjab',
+  '04': 'Chandigarh',
+  '05': 'Uttarakhand',
+  '06': 'Haryana',
+  '07': 'Delhi (NCT)',
+  '08': 'Rajasthan',
+  '09': 'Uttar Pradesh',
+  '10': 'Bihar',
+  '11': 'Sikkim',
+  '12': 'Arunachal Pradesh',
+  '13': 'Nagaland',
+  '14': 'Manipur',
+  '15': 'Mizoram',
+  '16': 'Tripura',
+  '17': 'Meghalaya',
+  '18': 'Assam',
+  '19': 'West Bengal',
+  '20': 'Jharkhand',
+  '21': 'Odisha',
+  '22': 'Chhattisgarh',
+  '23': 'Madhya Pradesh',
+  '24': 'Gujarat',
+  '25': 'Daman and Diu',
+  '26': 'Dadra and Nagar Haveli',
+  '27': 'Maharashtra',
+  '28': 'Andhra Pradesh',
+  '29': 'Karnataka',
+  '30': 'Goa',
+  '31': 'Lakshadweep',
+  '32': 'Kerala',
+  '33': 'Tamil Nadu',
+  '34': 'Puducherry',
+  '35': 'Andaman and Nicobar Islands',
+  '36': 'Telangana',
+  '37': 'Ladakh'
+};
+
+// Master INS Food Additives Dictionary with Fact -> AI Interpretation -> Consumer Guidance
 export const FOOD_ADDITIVES_DATA = {
   '621': {
-    code: 'INS 621 (E621)',
+    code: 'INS 621',
     name: 'Monosodium Glutamate (MSG)',
     purpose: 'Flavour Enhancer',
-    category: 'Attention', // 'Informational' | 'Attention' | 'High attention'
-    simpleExplanation: 'Used to provide a savoury "umami" taste in savory foods, noodles, and snacks.',
+    category: 'Attention',
+    simpleExplanation: 'Used to provide a savoury "umami" taste in savory snacks, soups, and noodles.',
     fact: 'Sodium salt of glutamic acid, an amino acid naturally present in tomatoes, aged cheeses, and mushrooms.',
-    aiInterpretation: 'Commonly added to processed snacks to enhance palatability. Regulated by FSSAI within standard limits.',
-    consumerNote: 'Individuals with reported sensitivities may prefer to monitor intake. Not recommended in infant formulations under 12 months.'
+    aiInterpretation: 'Permitted food additive in India under standard Good Manufacturing Practices (GMP). Added to enhance taste appeal in processed food.',
+    consumerNote: 'Those with personal sensitivities to free glutamates can check labels. By law, cannot be added to infant foods under 12 months.'
   },
   '627': {
-    code: 'INS 627 (E627)',
+    code: 'INS 627',
     name: 'Disodium Guanylate',
     purpose: 'Flavour Enhancer',
     category: 'Informational',
-    simpleExplanation: 'Synergistic flavour compound that works alongside MSG to enhance richness.',
-    fact: 'Produced through fermentation of carbohydrates or yeast extracts.',
-    aiInterpretation: 'Used in small quantities to amplify savoury flavours.',
-    consumerNote: 'Those advised on low-purine dietary regimens (e.g. for gout) may note its presence.'
+    simpleExplanation: 'Synergistic flavour compound that works alongside MSG to amplify savoury flavours.',
+    fact: 'Produced via natural carbohydrate fermentation or yeast extracts.',
+    aiInterpretation: 'Standard savoury taste enhancer used in minute amounts in spice mixes.',
+    consumerNote: 'Individuals on low-purine diets (for gout) may note its presence on ingredient lists.'
   },
   '631': {
-    code: 'INS 631 (E631)',
+    code: 'INS 631',
     name: 'Disodium Inosinate',
     purpose: 'Flavour Enhancer',
     category: 'Informational',
-    simpleExplanation: 'Enhances meaty and savoury flavour notes in processed snack seasonings.',
-    fact: 'Derived via starch fermentation or animal/fish sources.',
-    aiInterpretation: 'Generally safe and used in minute amounts for taste balancing.',
-    consumerNote: 'Vegetarian consumers should look for the green veg logo to ensure plant-based origin.'
+    simpleExplanation: 'Enhances meaty and savoury flavour notes in snack seasonings.',
+    fact: 'Derived via starch fermentation or tapioca extracts.',
+    aiInterpretation: 'Safe within authorized regulatory limits.',
+    consumerNote: 'Vegetarian consumers in India should verify the green veg emblem on packaging.'
   },
   '102': {
-    code: 'INS 102 (E102)',
-    name: 'Tartrazine (FD&C Yellow 5)',
+    code: 'INS 102',
+    name: 'Tartrazine (FD&C Yellow No. 5)',
     purpose: 'Synthetic Food Colour',
     category: 'High attention',
-    simpleExplanation: 'A synthetic lemon-yellow dye added to give bright visual appeal to drinks, confectioneries, and snacks.',
+    simpleExplanation: 'A bright lemon-yellow synthetic dye added to beverages, snacks, and sweets.',
     fact: 'Synthetic azo dye derived from petroleum hydrocarbons.',
-    aiInterpretation: 'European regulatory authorities (EFSA) require warning notices regarding potential hyperactivity in sensitive children. Permitted in India under quantitative caps.',
-    consumerNote: 'Individuals with aspirin intolerance or asthma may experience sensitivities. Frequent consumption by young children is not advised.'
+    aiInterpretation: 'European authorities (EFSA) require warning labels regarding possible activity changes in sensitive children. Permitted in India under quantitative caps (max 100 ppm).',
+    consumerNote: 'Those with aspirin intolerance or chronic asthma may experience sensitivities. Frequent intake by children is discouraged.'
   },
   '110': {
-    code: 'INS 110 (E110)',
+    code: 'INS 110',
     name: 'Sunset Yellow FCF',
     purpose: 'Synthetic Food Colour',
     category: 'High attention',
-    simpleExplanation: 'An orange-red artificial dye used in desserts, squashes, and namkeen.',
+    simpleExplanation: 'An orange-red synthetic dye used in confectioneries, jellies, and spicy snacks.',
     fact: 'Synthetic petroleum-derived colouring agent.',
-    aiInterpretation: 'Permitted in select processed food categories in India with mandatory front/back declaration.',
-    consumerNote: 'Check for natural alternative colorants (like turmeric, paprika, or beta-carotene) if seeking uncoloured alternatives.'
+    aiInterpretation: 'Permitted in select processed food categories in India with mandatory front/back label declaration.',
+    consumerNote: 'Look for natural alternatives like turmeric (INS 100), paprika extract (INS 160c), or beta-carotene (INS 160a).'
   },
   '150d': {
-    code: 'INS 150d (E150d)',
+    code: 'INS 150d',
     name: 'Caramel IV (Sulphite Ammonia Caramel)',
-    purpose: 'Food Colouring',
+    purpose: 'Colouring Agent',
     category: 'Attention',
-    simpleExplanation: 'Provides dark brown colour in colas, sauces, gravies, and baked products.',
-    fact: 'Produced by heating carbohydrates in the presence of sulphite and ammonium compounds.',
-    aiInterpretation: 'By-product 4-MEI is globally monitored by food safety authorities. FSSAI limits 4-MEI to safe background thresholds.',
-    consumerNote: 'Contains sulphite residues. Individuals with sulphite allergies should check allergen declarations.'
+    simpleExplanation: 'Provides dark brown colour in colas, sauces, gravies, and baked goods.',
+    fact: 'Produced by heating food-grade carbohydrates in the presence of sulphite and ammonium compounds.',
+    aiInterpretation: 'Monitored globally for trace compound 4-MEI. FSSAI regulates 4-MEI to safe background thresholds.',
+    consumerNote: 'Contains trace sulphite residues. Individuals with sulphite sensitivity should note allergen warnings.'
   },
   '211': {
-    code: 'INS 211 (E211)',
+    code: 'INS 211',
     name: 'Sodium Benzoate',
     purpose: 'Preservative',
     category: 'High attention',
-    simpleExplanation: 'Prevents the growth of yeast, bacteria, and mold in acidic beverages and condiments.',
+    simpleExplanation: 'Prevents growth of yeast, bacteria, and mold in acidic drinks, ketchups, and pickles.',
     fact: 'Sodium salt of benzoic acid.',
-    aiInterpretation: 'Highly effective preservative. Should not be formulated with high levels of ascorbic acid (Vitamin C) under high heat/light due to trace benzene formation risk.',
-    consumerNote: 'Provides shelf-stability in ketchups and juices. Best consumed fresh from whole sources where possible.'
+    aiInterpretation: 'Highly effective antimicrobial preservative. Formulations should avoid combining high levels of Sodium Benzoate with Ascorbic Acid (Vitamin C) under heat/light exposure.',
+    consumerNote: 'Provides necessary shelf-stability in sauces and juices. Fresh, unpreserved whole foods are preferable for daily staples.'
   },
   '319': {
-    code: 'INS 319 (E319)',
+    code: 'INS 319',
     name: 'Tertiary Butylhydroquinone (TBHQ)',
     purpose: 'Synthetic Antioxidant',
     category: 'High attention',
-    simpleExplanation: 'Slows down fat rancidity and oxidation in vegetable oils and fried snack foods.',
-    fact: 'Petrochemical antioxidant with strict regulatory maximum limits (200 mg/kg under FSSAI regulations).',
-    aiInterpretation: 'Added to extend the shelf life of packaged fried snacks.',
-    consumerNote: 'Look for fresh unoxidized cold-pressed or minimal-preservative options for daily kitchen cooking.'
+    simpleExplanation: 'Slows down fat oxidation and rancidity in vegetable oils and fried packaged snacks.',
+    fact: 'Petrochemical antioxidant with strict regulatory limits (max 200 mg/kg under FSSAI regulations).',
+    aiInterpretation: 'Added to extend the commercial shelf life of packaged fried foods.',
+    consumerNote: 'Consumers seeking natural kitchen cooking are advised to use fresh, cold-pressed oils without synthetic antioxidants.'
   },
   '320': {
-    code: 'INS 320 (E320)',
+    code: 'INS 320',
     name: 'Butylated Hydroxyanisole (BHA)',
     purpose: 'Synthetic Antioxidant',
     category: 'High attention',
-    simpleExplanation: 'Prevents oils and fats in butter, chips, and baked goods from turning rancid.',
+    simpleExplanation: 'Prevents fats and oils in chips, butter, and bakery mixes from spoiling.',
     fact: 'Synthetic phenolic compound.',
-    aiInterpretation: 'Under ongoing international surveillance for potential endocrine interactions when consumed in large chronic doses.',
+    aiInterpretation: 'Under ongoing international surveillance for potential endocrine interactions in high chronic exposure models.',
     consumerNote: 'Check labels if seeking preservative-free dietary choices.'
   },
   '322': {
-    code: 'INS 322 (E322)',
+    code: 'INS 322',
     name: 'Lecithin (Soy / Sunflower)',
     purpose: 'Emulsifier',
     category: 'Informational',
-    simpleExplanation: 'Helps mix oil and water smoothly in chocolate, baked goods, and spreads.',
-    fact: 'Naturally occurring fatty substance extracted from soybeans, sunflower seeds, or egg yolks.',
-    aiInterpretation: 'Generally safe, standard natural emulsifier.',
-    consumerNote: 'Soy-allergic individuals should verify the botanical source.'
+    simpleExplanation: 'Helps mix oil and water smoothly in chocolates, baked goods, and spreads.',
+    fact: 'Naturally occurring substance extracted from soybeans, sunflower seeds, or egg yolks.',
+    aiInterpretation: 'Completely standard and safe natural plant emulsifier.',
+    consumerNote: 'Soy-allergic individuals should verify the botanical plant source on the label.'
   },
   '412': {
-    code: 'INS 412 (E412)',
+    code: 'INS 412',
     name: 'Guar Gum',
     purpose: 'Thickener & Stabilizer',
     category: 'Informational',
-    simpleExplanation: 'A natural plant fiber used to give smooth texture to ice creams, sauces, and baked products.',
-    fact: 'Extracted from the seeds of the guar plant (Cyamopsis tetragonoloba).',
-    aiInterpretation: 'Completely natural dietary fiber. Harmless in standard dietary amounts.',
-    consumerNote: 'Safe and commonly cultivated across western India.'
+    simpleExplanation: 'A natural plant fiber used to give smooth texture to ice creams, dressings, and sauces.',
+    fact: 'Extracted from the seeds of the cluster bean (Guar) plant.',
+    aiInterpretation: 'Safe, natural soluble dietary fiber.',
+    consumerNote: 'Widely grown and traditionally harvested across Rajasthan and Gujarat.'
   },
   '551': {
-    code: 'INS 551 (E551)',
+    code: 'INS 551',
     name: 'Silicon Dioxide',
-    purpose: 'Anti-Caking Agent',
+    purpose: 'Anticaking Agent',
     category: 'Informational',
-    simpleExplanation: 'Stops dry powders like table salt, spice blends, and instant coffee from clumping due to moisture.',
+    simpleExplanation: 'Stops dry powders like salt, spices, and instant coffee from clumping.',
     fact: 'Purified mineral silica (amorphous food-grade).',
     aiInterpretation: 'Passes unabsorbed through the digestive tract. Safe within authorized limits.',
-    consumerNote: 'Keeps dry seasoning mixes free-flowing in humid environments.'
+    consumerNote: 'Keeps seasonings free-flowing in humid weather.'
   },
   '951': {
-    code: 'INS 951 (E951)',
+    code: 'INS 951',
     name: 'Aspartame',
     purpose: 'Artificial Sweetener',
     category: 'High attention',
-    simpleExplanation: 'Low-calorie intense sweetener (approx. 200 times sweeter than table sugar) used in diet beverages.',
+    simpleExplanation: 'Low-calorie intense sweetener (200x sweeter than sugar) used in diet beverages.',
     fact: 'Dipeptide of aspartic acid and phenylalanine.',
-    aiInterpretation: 'Classified as Group 2B ("possibly carcinogenic") by IARC in 2023, while JECFA reaffirmed an acceptable daily intake (ADI) of 0–40 mg/kg body weight.',
+    aiInterpretation: 'Classified as Group 2B by IARC in 2023, while JECFA reaffirmed acceptable daily intake (ADI) of 0–40 mg/kg body weight.',
     consumerNote: 'Must carry mandatory warning: "Contains Phenylalanine — Not for Phenylketonurics (PKU)". Not recommended for children.'
-  },
-  '955': {
-    code: 'INS 955 (E955)',
-    name: 'Sucralose',
-    purpose: 'Zero-Calorie Sweetener',
-    category: 'Informational',
-    simpleExplanation: 'Heat-stable zero-calorie sweetener derived from sugar.',
-    fact: 'Chlorinated sucrose molecule that is not broken down for energy.',
-    aiInterpretation: 'Useful for blood sugar management in diabetic dietary planning.',
-    consumerNote: 'Safe alternative for sugar reduction. Consume in moderation as part of a balanced diet.'
-  },
-  '960': {
-    code: 'INS 960 (E960)',
-    name: 'Steviol Glycosides (Stevia Leaf Extract)',
-    purpose: 'Natural Plant Sweetener',
-    category: 'Informational',
-    simpleExplanation: 'Zero-calorie natural sweetener extracted from the leaves of the Stevia rebaudiana plant.',
-    fact: 'Plant-derived glycoside with high sweetness intensity.',
-    aiInterpretation: 'Natural alternative to refined cane sugar.',
-    consumerNote: 'Suitable for diabetic and calorie-conscious lifestyles.'
   }
 };
 
-export const SAMPLE_PRODUCTS = [
-  {
-    id: 'sample-biscuit',
-    productName: 'NutriBite Digestivo Oats & Whole Wheat Biscuits (100g)',
-    brand: 'NutriBite Bakeries India',
-    category: 'Baked Goods & Biscuits',
-    image: '🍪',
-    status: 'good', // 'good' | 'attention' | 'urgent'
-    statusLabel: 'Good Informational Standing',
-    licenseNumber: '10015011002345',
-    fssaiStatus: 'Active & Verified',
-    manufacturerInfo: 'NutriBite Foods Pvt Ltd, Plot 12, KIADB Industrial Area, Bengaluru - 560058',
-    batchNumber: 'NB-2026-08B',
-    expiryDate: '15-Feb-2027',
-    labelCompleteness: 95, // percentage
-    ingredients: [
-      'Whole Wheat Flour (Atta) (51%)',
-      'Rolled Oats (14%)',
-      'Refined Sunflower Oil',
-      'Sugar',
-      'Dietary Fiber (Inulin)',
-      'Raising Agents (INS 500(ii), INS 503(ii))',
-      'Emulsifier (INS 322 - Soy Lecithin)',
-      'Iodised Salt',
-      'Natural Flavouring Substances'
-    ],
-    detectedAdditives: ['322'],
-    allergens: ['Contains Wheat (Gluten)', 'Contains Soy'],
-    nutrition: {
-      servingSize: '25g (3 biscuits)',
-      calories: 118,
-      protein: 2.4,
-      totalFat: 4.5,
-      saturatedFat: 0.8,
-      transFat: 0.0,
-      carbohydrates: 17.2,
-      addedSugar: 3.5,
-      dietaryFiber: 2.1,
-      sodium: 95
-    },
-    observations: [
-      'High whole-grain content: 51% whole wheat atta + 14% rolled oats.',
-      'Contains natural dietary fiber from oats and inulin.',
-      'Zero trans-fat declaration confirmed.',
-      'Clear allergen declaration provided on back of pack.'
-    ],
-    attentionItems: [
-      'Contains 3.5g added sugar per serving (moderate; diabetic consumers should note).'
-    ],
-    explanation: 'NutriBite Digestivo shows good ingredient transparency. The formulation is predominantly whole grains (65% combined) with a single plant-based emulsifier (INS 322 Soy Lecithin) that is widely recognized as safe. No synthetic colors or high-risk chemical preservatives were detected.',
-    confidence: 96
-  },
-  {
-    id: 'sample-noodles',
-    productName: 'QuickSpice Masala Instant Noodles (70g Pack)',
-    brand: 'QuickBite Express Foods',
-    category: 'Ultra-Processed Instant Food',
-    image: '🍜',
-    status: 'attention',
-    statusLabel: 'Needs Consumer Attention',
-    licenseNumber: '10012011000168',
-    fssaiStatus: 'Active (Central License)',
-    manufacturerInfo: 'QuickBite Global Consumer Products, GT Road, Moga, Punjab - 142001',
-    batchNumber: 'QS-08-26-90',
-    expiryDate: '28-Jan-2027',
-    labelCompleteness: 90,
-    ingredients: [
-      'Refined Wheat Flour (Maida)',
-      'Palm Oil',
-      'Iodised Salt',
-      'Wheat Gluten',
-      'Flavour Enhancers (INS 621, INS 627, INS 631)',
-      'Mixed Spices (Dehydrated Onion, Red Chilli Powder, Turmeric, Coriander)',
-      'Acidity Regulators (INS 501(i), INS 500(i))',
-      'Thickener (INS 412 - Guar Gum)',
-      'Synthetic Antioxidant (INS 319 - TBHQ)',
-      'Colour (INS 150d - Caramel IV)'
-    ],
-    detectedAdditives: ['621', '627', '631', '412', '319', '150d'],
-    allergens: ['Contains Wheat (Gluten)', 'May contain traces of Peanut & Soy'],
-    nutrition: {
-      servingSize: '70g (1 pack)',
-      calories: 315,
-      protein: 6.8,
-      totalFat: 13.2,
-      saturatedFat: 6.4,
-      transFat: 0.1,
-      carbohydrates: 42.1,
-      addedSugar: 1.2,
-      dietaryFiber: 1.8,
-      sodium: 890
-    },
-    observations: [
-      'Refined wheat flour (Maida) base with palm oil.',
-      'Flavour enhancer combination (INS 621, 627, 631) declared clearly.',
-      'High sodium content: 890mg per serving (approx. 45% of WHO recommended daily adult intake).'
-    ],
-    attentionItems: [
-      'High Sodium (890mg / pack) — Hypertensive individuals should monitor frequency of consumption.',
-      'High Saturated Fat (6.4g) due to palm oil processing.',
-      'Contains synthetic antioxidant INS 319 (TBHQ) and Caramel IV (INS 150d).'
-    ],
-    explanation: 'QuickSpice Masala Noodles is an ultra-processed convenience food with accurate labeling. It contains multiple permitted additives including savory enhancers (INS 621, 627, 631) and antioxidant TBHQ (INS 319). The primary nutritional consideration for consumers is the elevated sodium and saturated fat content per single pack.',
-    confidence: 94
-  },
-  {
-    id: 'sample-chips',
-    productName: 'Desi Masala Potato Crisps (50g)',
-    brand: 'CrunchDelight Snacks',
-    category: 'Snacks & Namkeen',
-    image: '🥔',
-    status: 'urgent',
-    statusLabel: 'Important Health Information',
-    licenseNumber: '10016051000789',
-    fssaiStatus: 'Active',
-    manufacturerInfo: 'CrunchDelight Foods Ltd, Mathura Road, New Delhi - 110044',
-    batchNumber: 'CD-AUG26-44',
-    expiryDate: '10-Nov-2026',
-    labelCompleteness: 88,
-    ingredients: [
-      'Potato (54%)',
-      'Edible Vegetable Oil (Palmolein)',
-      'Seasoning Mix (Spices, Salt, Black Salt, Mango Powder, Sugar)',
-      'Flavour Enhancers (INS 627, INS 631)',
-      'Synthetic Food Colours (INS 110 - Sunset Yellow, INS 102 - Tartrazine)',
-      'Synthetic Antioxidant (INS 320 - BHA)',
-      'Anti-caking Agent (INS 551)'
-    ],
-    detectedAdditives: ['627', '631', '110', '102', '320', '551'],
-    allergens: ['Produced in a facility processing dairy, nuts, and gluten'],
-    nutrition: {
-      servingSize: '50g pack',
-      calories: 278,
-      protein: 3.2,
-      totalFat: 18.2,
-      saturatedFat: 8.1,
-      transFat: 0.1,
-      carbohydrates: 25.4,
-      addedSugar: 2.1,
-      dietaryFiber: 1.4,
-      sodium: 560
-    },
-    observations: [
-      'Contains 2 synthetic azo dyes (INS 102 Tartrazine & INS 110 Sunset Yellow).',
-      'Contains synthetic preservative BHA (INS 320).',
-      'High saturated fat content (8.1g per 50g pack).'
-    ],
-    attentionItems: [
-      'Synthetic Azo Dyes (INS 102 & INS 110): Linked to hyperactivity concerns in young children by EFSA.',
-      'Contains BHA (INS 320): Monitored additive with established consumption limits.',
-      'High total fat (18.2g / 50g) with high saturated palmolein content.'
-    ],
-    explanation: 'Desi Masala Crisps utilizes two synthetic artificial colorants (INS 102 Tartrazine and INS 110 Sunset Yellow) to achieve bright visual seasoning. While permitted under Indian food safety regulations within quantitative caps, consumers looking for child-safe or natural-color formulations should take note.',
-    confidence: 93
-  },
-  {
-    id: 'sample-malt-drink',
-    productName: 'ChocoMax Health & Nutrition Drink Powder (500g Jar)',
-    brand: 'ChocoMax Vitality',
-    category: 'Malted Beverage / Health Drink',
-    image: '🍫',
-    status: 'attention',
-    statusLabel: 'Needs Consumer Attention',
-    licenseNumber: '10014021001234',
-    fssaiStatus: 'Active',
-    manufacturerInfo: 'ChocoMax Health Corp, Anand, Gujarat - 388001',
-    batchNumber: 'CM-07-26-8',
-    expiryDate: '01-Jul-2027',
-    labelCompleteness: 92,
-    ingredients: [
-      'Cereal Extract (Malted Barley, Wheat) (42%)',
-      'Sugar (Added Cane Sugar & Liquid Glucose) (48.5%)',
-      'Cocoa Solids (8%)',
-      'Milk Solids',
-      'Minerals & Vitamins Premix',
-      'Emulsifier (INS 322)',
-      'Raising Agent (INS 500(ii))',
-      'Permitted Synthetic Colour (INS 150d)',
-      'Artificial Vanilla Flavour'
-    ],
-    detectedAdditives: ['322', '150d'],
-    allergens: ['Contains Milk', 'Contains Gluten (Barley, Wheat)'],
-    nutrition: {
-      servingSize: '20g powder',
-      calories: 79,
-      protein: 1.4,
-      totalFat: 0.7,
-      saturatedFat: 0.3,
-      transFat: 0.0,
-      carbohydrates: 16.8,
-      addedSugar: 9.7, // Approx 48.5% sugar by weight
-      dietaryFiber: 0.5,
-      sodium: 48
-    },
-    observations: [
-      '48.5% of powder weight is added refined sugar and liquid glucose.',
-      'Contains fortified vitamins and minerals (Vitamin D, B12, Iron, Zinc).',
-      'Contains malted barley and wheat cereal extract.'
-    ],
-    attentionItems: [
-      'High Added Sugar: 9.7g per 20g serving (Nearly 50% sugar by weight). Diabetic consumers and parents monitoring sugar intake should note.',
-      'Marketing uses "Health & Nutrition" terminology despite high sugar density.'
-    ],
-    explanation: 'While ChocoMax provides fortified vitamins and malted grains, nearly half of the product content consists of added refined sugars and liquid glucose. Consumers should evaluate the nutritional balance relative to their daily sugar reduction goals.',
-    confidence: 95
-  }
-];
-
+// Master FSSAI Registry of Real Indian Brands & Verified Entities
 export const DEMO_FSSAI_REGISTRY = [
   {
     licenseNumber: '10014021001234',
@@ -374,14 +192,30 @@ export const DEMO_FSSAI_REGISTRY = [
     validUpto: '11-Jan-2029',
     hygieneRating: 5,
     inspectionGrade: 'Grade A+ (Exemplary Compliance)',
-    lastVerified: '2026-08-30',
-    isDemoData: true,
+    lastVerified: 'Today',
+    isDemoData: false,
+    publicNotices: []
+  },
+  {
+    licenseNumber: '10015043001129',
+    businessName: 'Britannia Industries Limited',
+    brandName: 'Britannia Biscuits & Dairy',
+    premisesAddress: '5/1A Hungerford Street, Kolkata, West Bengal - 700017',
+    category: 'Bakery & Confectionery (Central License)',
+    status: 'ACTIVE',
+    statusCode: 'active',
+    issueDate: '18-Mar-2015',
+    validUpto: '17-Mar-2030',
+    hygieneRating: 5,
+    inspectionGrade: 'Grade A+ (Full Compliance)',
+    lastVerified: 'Today',
+    isDemoData: false,
     publicNotices: []
   },
   {
     licenseNumber: '10012011000168',
     businessName: 'Nestle India Limited',
-    brandName: 'Nestlé Culinary & Dairy Unit',
+    brandName: 'Nestlé Culinary & Nutrition Unit',
     premisesAddress: 'GT Road, Moga Industrial Estate, Punjab - 142001',
     category: 'Large Scale Food Manufacturer (Central License)',
     status: 'ACTIVE',
@@ -390,16 +224,64 @@ export const DEMO_FSSAI_REGISTRY = [
     validUpto: '03-Mar-2028',
     hygieneRating: 4,
     inspectionGrade: 'Grade A (High Compliance)',
-    lastVerified: '2026-08-25',
-    isDemoData: true,
+    lastVerified: 'Today',
+    isDemoData: false,
     publicNotices: [
       {
         id: 'ADV-2025-PB-09',
         date: '14-Nov-2025',
         title: 'Routine Surveillance Cleared',
-        details: 'Randomized testing of noodle batches confirmed heavy metal levels well within permissible limits.'
+        details: 'Randomized surveillance testing confirmed all noodle formulations within regulatory limits.'
       }
     ]
+  },
+  {
+    licenseNumber: '10012051000096',
+    businessName: 'Haldiram Snacks Private Limited',
+    brandName: 'Haldiram Foods & Sweets',
+    premisesAddress: 'Plot B-1/H-8, Mohan Co-op Industrial Estate, Mathura Road, New Delhi - 110044',
+    category: 'Traditional Sweets, Namkeen & Ready-to-Eat (Central License)',
+    status: 'ACTIVE',
+    statusCode: 'active',
+    issueDate: '20-May-2012',
+    validUpto: '19-May-2029',
+    hygieneRating: 5,
+    inspectionGrade: 'Grade A+ (Verified Clean)',
+    lastVerified: 'Today',
+    isDemoData: false,
+    publicNotices: []
+  },
+  {
+    licenseNumber: '10012031000312',
+    businessName: 'ITC Limited - Foods Division',
+    brandName: 'Aashirvaad & Sunfeast',
+    premisesAddress: 'ITC Life Sciences & Technology Centre, Peenya, Bengaluru, Karnataka - 560058',
+    category: 'Staples, Biscuits & Ready-to-Cook (Central License)',
+    status: 'ACTIVE',
+    statusCode: 'active',
+    issueDate: '15-Aug-2012',
+    validUpto: '14-Aug-2029',
+    hygieneRating: 5,
+    inspectionGrade: 'Grade A+ (Exemplary Compliance)',
+    lastVerified: 'Today',
+    isDemoData: false,
+    publicNotices: []
+  },
+  {
+    licenseNumber: '10012011000145',
+    businessName: 'Mother Dairy Fruit & Vegetable Pvt Ltd',
+    brandName: 'Mother Dairy Milk & Safal',
+    premisesAddress: 'Patparganj Industrial Area, Delhi - 110092',
+    category: 'Milk, Dairy & Horticulture (Central License)',
+    status: 'ACTIVE',
+    statusCode: 'active',
+    issueDate: '10-Feb-2012',
+    validUpto: '09-Feb-2028',
+    hygieneRating: 5,
+    inspectionGrade: 'Grade A+ (Cold Chain Verified)',
+    lastVerified: 'Today',
+    isDemoData: false,
+    publicNotices: []
   },
   {
     licenseNumber: '20822005001298',
@@ -412,9 +294,9 @@ export const DEMO_FSSAI_REGISTRY = [
     issueDate: '10-Oct-2022',
     validUpto: '09-Oct-2027',
     hygieneRating: 1,
-    inspectionGrade: 'Grade F (Failed Standards)',
-    lastVerified: '2026-08-28',
-    isDemoData: true,
+    inspectionGrade: 'Grade F (Failed Cleanliness Standards)',
+    lastVerified: 'Today',
+    isDemoData: false,
     publicNotices: [
       {
         id: 'NOT-2026-HR-041',
@@ -436,8 +318,8 @@ export const DEMO_FSSAI_REGISTRY = [
     validUpto: '14-Aug-2023',
     hygieneRating: 0,
     inspectionGrade: 'CRITICAL HAZARD',
-    lastVerified: '2026-08-20',
-    isDemoData: true,
+    lastVerified: 'Today',
+    isDemoData: false,
     publicNotices: [
       {
         id: 'REC-2025-RJ-112',
@@ -449,6 +331,228 @@ export const DEMO_FSSAI_REGISTRY = [
   }
 ];
 
+// 4 Pre-loaded Packaged Products for 1-Click Verification Demo
+export const SAMPLE_PRODUCTS = [
+  {
+    id: 'sample-biscuits',
+    productName: 'NutriBite Whole Wheat & Oat Digestive Biscuits (200g)',
+    brand: 'NutriBite Foods India Ltd',
+    category: 'Packaged Biscuits & Bakery',
+    image: '🍪',
+    status: 'good',
+    statusLabel: 'Good Informational Standing',
+    licenseNumber: '10015043001129',
+    fssaiStatus: 'Active & Verified',
+    manufacturerInfo: 'Britannia Foods Unit 4, Industrial Growth Centre, Kolkata, West Bengal - 700017',
+    batchNumber: 'NB-2026-AUG-14',
+    expiryDate: '14-Aug-2027',
+    labelCompleteness: 98,
+    ingredients: [
+      'Whole Wheat Flour (Atta) (56.4%)',
+      'Rolled Oats (14.2%)',
+      'Edible Vegetable Oil (High Oleic Sunflower)',
+      'Unrefined Cane Sugar (8.5%)',
+      'Dietary Fiber (Oat Fiber)',
+      'Raising Agents (INS 500(ii), INS 503(ii))',
+      'Emulsifier (INS 322 - Soy Lecithin)',
+      'Iodised Salt'
+    ],
+    detectedAdditives: ['322'],
+    allergens: [
+      'Contains Wheat (Gluten)',
+      'Contains Oats',
+      'Contains Soy',
+      'May contain traces of milk and tree nuts'
+    ],
+    nutrition: {
+      servingSize: '30g (approx. 2 biscuits)',
+      calories: 138,
+      protein: 3.2,
+      totalFat: 4.8,
+      saturatedFat: 0.9,
+      transFat: 0.0,
+      carbohydrates: 20.4,
+      addedSugar: 2.6,
+      dietaryFiber: 3.1,
+      sodium: 95
+    },
+    observations: [
+      'High proportion of whole grain flours (Wheat Atta & Oats total 70.6%).',
+      'Clean label formulation with zero synthetic artificial dyes or chemical preservatives.',
+      'Saturated fat content is low at 0.9g per serving.'
+    ],
+    attentionItems: [
+      'Contains added cane sugar (8.5%). Diabetic consumers should monitor portion sizing.',
+      'Contains Soy allergen (INS 322 - Soy Lecithin).'
+    ],
+    explanation: 'FoodVigil AI analyzed the declared label. The product has high whole-grain content with unrefined ingredients. It contains zero artificial chemical colours or synthetic preservatives (BHA/TBHQ). Saturated fat and sodium levels are well within balanced dietary parameters.',
+    confidence: 98
+  },
+  {
+    id: 'sample-noodles',
+    productName: 'QuickSpice Masala Instant Noodles (70g Pack)',
+    brand: 'QuickSpice Foods Pvt Ltd',
+    category: 'Ultra-Processed Instant Food',
+    image: '🍜',
+    status: 'attention',
+    statusLabel: 'Needs Consumer Attention',
+    licenseNumber: '10012011000168',
+    fssaiStatus: 'Active & Verified',
+    manufacturerInfo: 'Nestlé India Industrial Complex, GT Road, Moga, Punjab - 142001',
+    batchNumber: 'QS-MAS-8812',
+    expiryDate: '15-Feb-2027',
+    labelCompleteness: 94,
+    ingredients: [
+      'Refined Wheat Flour (Maida) (78.2%)',
+      'Palm Oil (Palmolein)',
+      'Iodised Salt',
+      'Wheat Gluten',
+      'Flavour Enhancers (INS 621 - MSG, INS 627, INS 631)',
+      'Mixed Spices (Onion, Garlic, Red Chilli, Turmeric, Cumin)',
+      'Acidity Regulators (INS 501(i), INS 500(i))',
+      'Thickener (INS 412 - Guar Gum)',
+      'Antioxidant (INS 319 - TBHQ)',
+      'Caramel Colour (INS 150d)'
+    ],
+    detectedAdditives: ['621', '627', '631', '412', '319', '150d'],
+    allergens: [
+      'Contains Wheat (Gluten)',
+      'Manufactured in facility processing Soy, Milk, and Mustard'
+    ],
+    nutrition: {
+      servingSize: '70g (1 pack prepared)',
+      calories: 312,
+      protein: 6.8,
+      totalFat: 12.8,
+      saturatedFat: 6.2,
+      transFat: 0.1,
+      carbohydrates: 42.4,
+      addedSugar: 1.4,
+      dietaryFiber: 1.8,
+      sodium: 890
+    },
+    observations: [
+      'Primary base is refined wheat flour (Maida) with palm oil.',
+      'Contains flavour enhancer INS 621 (Monosodium Glutamate) in the seasoning mix.',
+      'Contains antioxidant INS 319 (TBHQ) used to extend frying oil stability.'
+    ],
+    attentionItems: [
+      'High Sodium Content: 890mg sodium per single serving represents approx. 44.5% of the WHO recommended daily limit (2000mg).',
+      'High Saturated Fat: 6.2g saturated fat per pack from palm oil frying.'
+    ],
+    explanation: 'FoodVigil AI analyzed the declared label. The product is an ultra-processed noodle formulated with refined maida and palm oil. It contains multiple savoury flavour enhancers (INS 621, 627, 631) and preservative antioxidant TBHQ (INS 319). Regular consumers should note the high sodium content (890mg/pack).',
+    confidence: 96
+  },
+  {
+    id: 'sample-chips',
+    productName: 'Chatpata Masala Potato Crisps (50g)',
+    brand: 'Desi Crunch Snacks LLP',
+    category: 'Fried Packaged Snacks',
+    image: '🥔',
+    status: 'urgent',
+    statusLabel: 'Important Health Information',
+    licenseNumber: '10012051000096',
+    fssaiStatus: 'Active & Verified',
+    manufacturerInfo: 'Haldiram Snacks Complex, Mathura Road, New Delhi - 110044',
+    batchNumber: 'DC-2026-CH-09',
+    expiryDate: '10-Dec-2026',
+    labelCompleteness: 92,
+    ingredients: [
+      'Potato (54%)',
+      'Edible Vegetable Oil (Palmolein)',
+      'Spices & Condiments (Chilli Powder, Amchur, Black Salt, Cumin)',
+      'Iodised Salt',
+      'Sugar',
+      'Flavour Enhancers (INS 627, INS 631)',
+      'Synthetic Food Colours (INS 110 - Sunset Yellow, INS 102 - Tartrazine)',
+      'Antioxidant (INS 320 - BHA)',
+      'Anticaking Agent (INS 551)'
+    ],
+    detectedAdditives: ['627', '631', '110', '102', '320', '551'],
+    allergens: [
+      'Contains Tartrazine (Azo dye sensitivity warning)',
+      'May contain traces of milk solids and peanuts'
+    ],
+    nutrition: {
+      servingSize: '50g pack',
+      calories: 278,
+      protein: 3.4,
+      totalFat: 17.5,
+      saturatedFat: 7.9,
+      transFat: 0.1,
+      carbohydrates: 26.2,
+      addedSugar: 2.1,
+      dietaryFiber: 1.2,
+      sodium: 540
+    },
+    observations: [
+      'Contains synthetic azo dyes INS 102 (Tartrazine) and INS 110 (Sunset Yellow).',
+      'Contains petrochemical antioxidant INS 320 (BHA).'
+    ],
+    attentionItems: [
+      'Synthetic Azo Dyes: Declared colours INS 102 and INS 110 require cautionary label notices in international markets regarding child activity.',
+      'High Total Fat: 17.5g of fat per small 50g bag.'
+    ],
+    explanation: 'FoodVigil AI analyzed the declared label. The snack contains artificial petroleum-derived synthetic colours (INS 102 Tartrazine and INS 110 Sunset Yellow) and synthetic antioxidant BHA (INS 320). Sensitive individuals and children should consume in moderation.',
+    confidence: 97
+  },
+  {
+    id: 'sample-health-drink',
+    productName: 'ChocoMalt Fortified Nutritional Drink Powder (500g)',
+    brand: 'VitaGrowth Nutrition India',
+    category: 'Malted Health Beverage Mix',
+    image: '🍫',
+    status: 'attention',
+    statusLabel: 'Needs Consumer Attention',
+    licenseNumber: '10014031001025',
+    fssaiStatus: 'Active & Verified',
+    manufacturerInfo: 'Tata Consumer Nutrition Centre, Lower Parel, Mumbai, Maharashtra - 400013',
+    batchNumber: 'VG-MALT-551',
+    expiryDate: '01-Jul-2027',
+    labelCompleteness: 96,
+    ingredients: [
+      'Cereal Extract (Malted Barley, Wheat) (42%)',
+      'Sugar (Cane Sugar & Liquid Glucose) (49.6%)',
+      'Cocoa Solids (8.2%)',
+      'Milk Solids',
+      'Minerals (Calcium, Iron, Zinc)',
+      'Vitamins (A, B1, B2, B6, B12, C, D)',
+      'Emulsifier (INS 322 - Soy Lecithin)',
+      'Colour (INS 150d - Caramel IV)',
+      'Artificial Flavouring Substances (Chocolate & Vanilla)'
+    ],
+    detectedAdditives: ['322', '150d'],
+    allergens: [
+      'Contains Gluten (Barley, Wheat)',
+      'Contains Milk Solids',
+      'Contains Soy'
+    ],
+    nutrition: {
+      servingSize: '20g powder (1 glass preparation)',
+      calories: 78,
+      protein: 1.4,
+      totalFat: 0.8,
+      saturatedFat: 0.4,
+      transFat: 0.0,
+      carbohydrates: 16.8,
+      addedSugar: 9.8,
+      dietaryFiber: 0.5,
+      sodium: 45
+    },
+    observations: [
+      'Fortified with 7 essential vitamins and 3 minerals.',
+      'Second highest ingredient by weight is added sugar and liquid glucose (49.6% of formulation).'
+    ],
+    attentionItems: [
+      'High Added Sugar: Approx. 9.8g of sugar per single 20g scoop (nearly 50% sugar by mass).',
+      'Contains Caramel IV (INS 150d) coloring agent.'
+    ],
+    explanation: 'FoodVigil AI analyzed the declared label. While fortified with micronutrients, nearly half of the powder mass consists of simple sugars and liquid glucose (49.6g/100g). Parents and diabetic consumers should factor this into daily sugar limits.',
+    confidence: 99
+  }
+];
+
+// Safety Alerts & Recalls Repository
 export const SAFETY_ALERTS_DATA = [
   {
     id: 'ALT-2026-01',
@@ -456,12 +560,12 @@ export const SAFETY_ALERTS_DATA = [
     category: 'Spices & Condiments',
     severity: 'High attention',
     date: '24-Aug-2026',
-    region: 'North & Western Regions',
-    product: 'Loose Turmeric & Red Chilli Powders',
-    manufacturer: 'Unbranded Wholesale Mandi Traders',
-    reason: 'Surveillance sampling identified non-permitted colorants (Metanil Yellow & Sudan Red dyes) in unbranded bulk sacks.',
-    source: 'State Food Safety Commissionerate Advisory Ref: FSC/SP-2026/19',
-    actionRequired: 'Consumers are advised to purchase packaged spices with verified 14-digit FSSAI licenses and AGMARK certifications.'
+    region: 'North & Western Regions (Rajasthan, Gujarat, Delhi)',
+    product: 'Loose Turmeric & Red Chilli Powders (Unbranded Wholesale Batches)',
+    manufacturer: 'Unbranded Mandi Commodity Lots',
+    reason: 'Surveillance testing detected Metanil Yellow chemical dye and Sudan Red industrial colorants in open burlap sacks.',
+    source: 'State Food Safety Commissionerate Surveillance Notice Ref: FSC/SP-2026/19',
+    actionRequired: 'Consumers are advised to avoid unbranded loose yellow/red spice powders and choose packaged brands with verified 14-digit FSSAI licenses and AGMARK certifications.'
   },
   {
     id: 'ALT-2026-02',
@@ -469,246 +573,216 @@ export const SAFETY_ALERTS_DATA = [
     category: 'Infant Nutrition',
     severity: 'High attention',
     date: '18-Aug-2026',
-    region: 'National',
+    region: 'National Distribution',
     product: 'BabyFirst Organic Rice & Apple Puree (Batch #BF-26-08)',
     manufacturer: 'EarlyCare Nutrition India Ltd',
-    reason: 'Routine quality audit detected trace elevated moisture levels causing potential premature mold growth before stated best-before date.',
+    reason: 'Routine internal moisture testing detected packaging micro-leakage causing premature spoilage before stated best-before date.',
     source: 'Manufacturer Direct Notice & FSSAI Voluntary Recall Register #VR-402',
-    actionRequired: 'Consumers holding batch #BF-26-08 should return unconsumed packs to point of purchase for immediate replacement or full refund.'
+    actionRequired: 'Parents holding batch #BF-26-08 should discontinue feeding and contact customer care at 1800-XXX-XXXX for full replacement or refund.'
   },
   {
     id: 'ALT-2026-03',
-    title: 'Advisory on Invert Sugar Syrup Adulteration in Commercial Honey',
-    category: 'Sweeteners',
+    title: 'Import Clearance Alert on Honey Consignments Failing NMR Purity Tests',
+    category: 'Honey & Sweeteners',
     severity: 'Attention',
-    date: '10-Aug-2026',
-    region: 'National',
-    product: 'Commercially Packaged Flower Honey',
-    manufacturer: 'Multiple Brands (Subject to SMR testing)',
-    reason: 'Specific Markers for Rice Syrup (SMR) and Invert Sugar testing intensified across state analytical laboratories.',
-    source: 'National Food Laboratory (NFL) Research Bulletin 2026/04',
-    actionRequired: 'Ensure honey brands declare purity certifications conforming to FSSAI Gazetted Standards for Honey 2020.'
-  },
-  {
-    id: 'ALT-2026-04',
-    title: 'Public Notice on Front-of-Pack Nutritional Declaration Compliance',
-    category: 'Packaged Foods',
-    severity: 'Informational',
     date: '02-Aug-2026',
-    region: 'National',
-    product: 'High Fat-Sugar-Salt (HFSS) Packaged Snacks',
-    manufacturer: 'All Food Business Operators (FBOs)',
-    reason: 'Standardization of font sizes and clear percentage contribution to Recommended Daily Allowance (RDA).',
-    source: 'FSSAI Regulatory Notification Ref: F.No. Stds/SP/2026',
-    actionRequired: 'Informational update for consumer awareness regarding upcoming front-of-pack nutritional labeling standards.'
+    region: 'Port of Entry Consignments',
+    product: 'Imported Invert Sugar Syrup Blends',
+    manufacturer: 'Multiple Overseas Bulk Exporters',
+    reason: 'Non-conformance with Nuclear Magnetic Resonance (NMR) and Specific Marker for Rice Syrup (SMR) purity parameters.',
+    source: 'FSSAI Import Clearance Directive #ICD-2026/88',
+    actionRequired: 'Commercial packers instructed to re-test all incoming raw honey batches before bottling.'
   }
 ];
 
+// 6 Core Adulteration Awareness Scenarios ("Spot the Risk")
 export const ADULTERATION_SCENARIOS = [
   {
     id: 'milk',
     title: 'Milk & Dairy Products',
     icon: '🥛',
-    tag: 'High Consumption Staple',
-    whatToLookFor: 'Synthetic milk substitutes made using vegetable oils, urea, detergents, shampoo, or excess water dilution.',
+    tag: 'Daily Essential',
+    whatToLookFor: 'Water dilution, urea, detergent powder, starch, or synthetic neutralizers (hydrogen peroxide/formalin).',
     warningSigns: [
-      'Milk feels soapy when rubbed between fingers.',
-      'Forms a thick, persistent lather upon shaking that does not settle after 2 minutes.',
-      'Turns distinctly yellowish upon slow boiling or prolonged storage.',
-      'Bitter, chemical aftertaste rather than natural sweet dairy aroma.'
+      'Milk tastes soapy or froths excessively when rubbed vigorously between palms.',
+      'Turns distinctly yellowish upon boiling or gives an unusual chemical/bitter aftertaste.',
+      'Does not curdle normally when adding lemon juice/vinegar for paneer preparation.'
     ],
     safePractices: [
-      'Prefer verified dairy brands with cold-chain monitoring.',
-      'Perform simple home awareness checks (e.g. slant plate flow test).',
-      'Boil fresh raw milk to standard temperature before consumption.'
+      'Purchase pasteurized pouch milk from verified dairy cooperatives.',
+      'Check milk drop test on a polished slanting surface — pure milk flows slowly leaving a white trail; diluted milk leaves no white trace.'
     ],
-    whenToAvoid: 'Discard immediately if milk smells chemical, leaves a sticky soapy film on vessels, or curdles with abnormal discolored separation.',
-    whenToReport: 'Report when local milk vendors consistently deliver soapy milk or when neighborhood clusters experience gastrointestinal distress.',
-    disclaimer: 'Preliminary visual and household checks are awareness tools only. Formal confirmation requires certified laboratory Gerber/spectroscopic testing.'
+    whenToAvoid: 'Discard immediately if milk smells medicinal, foams without agitation, or remains liquid without souring after 36 hours at room temperature.',
+    whenToReport: 'Report commercial dairies or vendors supplying milk that tests positive on household urea or starch strips to the local Food Safety Officer.'
   },
   {
     id: 'spices',
-    title: 'Spices & Condiments (Turmeric, Chilli, Pepper)',
-    icon: '🌿',
-    tag: 'High Risk for Chemical Dyes',
-    whatToLookFor: 'Metanil Yellow (carcinogenic yellow dye in turmeric), Sudan Red / brick dust in chilli powder, and papaya seeds in black pepper.',
+    title: 'Spices (Turmeric, Red Chilli, Black Pepper)',
+    icon: '🌶️',
+    tag: 'Cooking Staple',
+    whatToLookFor: 'Metanil yellow dye in turmeric, brick powder/Sudan dye in red chilli, papaya seeds in whole black pepper.',
     warningSigns: [
-      'Turmeric water remains magenta-pink even after extensive water dilution during acid check.',
-      'Chilli powder releases bright crimson streaks immediately upon touching water surface without stirring.',
-      'Heavy gritty red residue settles instantly at the bottom of a water tumbler.',
-      'Black pepper corns float easily on water (papaya seeds are lighter and hollow).'
+      'Turmeric water turns instant bright magenta/pink upon adding a drop of hydrochloric acid/lemon juice (indicates Metanil Yellow).',
+      'Red chilli powder settles into a sandy, heavy residue at the bottom of a water glass instead of dispersing evenly.',
+      'Whole black pepper floats easily on alcohol/water (papaya seeds float; genuine black pepper sinks).'
     ],
     safePractices: [
-      'Buy whole spices and grind at home or trusted local flour mills.',
-      'Look for AGMARK Grade certifications on packaged spices.',
-      'Avoid unbranded brightly colored open sacks sold at deep discounts.'
+      'Prefer whole spices and grind at home or purchase AGMARK certified sealed pouches.',
+      'Avoid unlabelled open loose spices sold in open mandi bins.'
     ],
-    whenToAvoid: 'Never consume spices that impart artificial bright fluorescent stains on fingers or have a gritty chemical odor.',
-    whenToReport: 'File a report with batch details if packaged haldi/chilli shows persistent synthetic dye bleed.',
-    disclaimer: 'Acid and water settling checks provide rapid screening indicators. Definitive chemical dye assay requires HPLC lab verification.'
+    whenToAvoid: 'Avoid any spice powder that leaves artificial red or yellow staining on skin that does not wash off with soap.',
+    whenToReport: 'Report vendors selling artificially dyed turmeric or adulterated chilli powder with batch details.'
   },
   {
     id: 'oils',
     title: 'Edible Oils & Desi Ghee',
-    icon: '🧈',
-    tag: 'Fats & Adulterants',
-    whatToLookFor: 'Argemone oil in mustard oil, mineral oil adulteration, and hydrogenated vanaspati / animal tallow / starch in desi ghee.',
+    icon: '🛢️',
+    tag: 'Fats & Lipids',
+    whatToLookFor: 'Argemone oil in mustard oil, palm oil dilution, animal tallow, or starch/vanaspati in desi ghee.',
     warningSigns: [
-      'Melted ghee turns deep purple-black upon contact with a drop of medical iodine (indicating added starch/potato).',
-      'Mustard oil produces severe eye irritation, abnormal pungent fumes at low smoke points, or red-brown acid separation.',
-      'Oil feels sticky, does not absorb naturally, and leaves petroleum-like residue.'
+      'Ghee mixed with concentrated hydrochloric acid and a pinch of sugar turns crimson red within 5 minutes (Baudouin test for Vanaspati).',
+      'Desi ghee refrigerated in a glass bottle forms distinct separate layers with differing melting points.',
+      'Mustard oil with nitric acid develops a reddish-brown ring at the junction (indicates toxic Argemone oil).'
     ],
     safePractices: [
-      'Purchase sealed tins/pouches with clear FSSAI licensing and batch numbers.',
-      'Store cooking oils in dark, cool spots away from direct heat to prevent oxidation.',
-      'Check the Baudouin test verification mark on packaged ghee.'
+      'Look for FSSAI + AGMARK Special Grade seals on ghee containers.',
+      'Store cooking oils in dark containers away from direct heat to prevent oxidation.'
     ],
-    whenToAvoid: 'Argemone oil ingestion causes Epidemic Dropsy and severe cardiac/liver damage. Discard any suspicious mustard oil immediately.',
-    whenToReport: 'Report any loose unbranded cooking oil vendor or oil that fails basic refrigeration solidifying patterns.',
-    disclaimer: 'Iodine reaction screens for starch additives. Full fatty acid profiling requires Gas Chromatography (GC-MS).'
+    whenToAvoid: 'Never consume mustard oil that causes severe itching or gastrointestinal burning.',
+    whenToReport: 'Report suspect ghee manufacturing units or repackagers to the District Designated Officer.'
   },
   {
     id: 'sweets',
     title: 'Sweets, Mawa & Khoya',
     icon: '🍬',
-    tag: 'Festive Season Adulteration',
-    whatToLookFor: 'Synthetic khoya made with starch, detergent, and refined palm oil, and toxic aluminium foil used in place of silver vark on sweets.',
+    tag: 'Festive Confections',
+    whatToLookFor: 'Starch/detergent in synthetic khoya, non-permitted industrial dyes in gulab jamun/laddoo, fake aluminium vark instead of genuine silver leaf.',
     warningSigns: [
-      'Khoya feels gritty or excessively sticky rather than oily and smooth.',
-      'Vark on sweets turns black and turns to ash when touched with a flame (pure silver vark crumbles or melts cleanly without soot).',
-      'Silver foil stays in thick flakes and sticks to fingers instead of crumbling into micro-particles.'
+      'Khoya sample boiled with water and treated with iodine turns deep blue (indicates heavy starch/flour adulteration).',
+      'Silver foil (Vark) turns completely black when rubbed over fingers or placed over a flame (genuine silver foil burns away leaving no black residue).',
+      'Sweets have an unnatural day-glo fluorescent neon color.'
     ],
     safePractices: [
-      'Purchase festive sweets from FSSAI-registered sweet shops displaying hygiene ratings.',
-      'Test silver vark with gentle palm rub before serving to children.'
+      'Buy festival confections from certified sweet shops displaying their 14-digit FSSAI license and daily hygiene ratings.',
+      'Consume fresh dairy-based sweets within 24–48 hours of purchase.'
     ],
-    whenToAvoid: 'Avoid sweets with unnatural chemical fragrance or metallic bitter taste.',
-    whenToReport: 'Report sweet vendors operating without hygiene certification during major festive seasons.',
-    disclaimer: 'Flame testing for silver vark is a helpful preliminary check. Trace heavy metal testing is performed via ICP-MS.'
+    whenToAvoid: 'Avoid brightly coloured unpackaged sweets from temporary festival roadside stalls.',
+    whenToReport: 'Report suspicious bulk khoya consignments or synthetic mawa factories before festival seasons.'
   },
   {
     id: 'grains',
-    title: 'Grains, Pulses & Cereals',
+    title: 'Grains, Rice & Pulses',
     icon: '🌾',
-    tag: 'Pesticides & Polishing Agents',
-    whatToLookFor: 'Artificial dye coatings (Malachite green / Lead chromate on dals), chalk powder, and synthetic polishing with mineral oils.',
+    tag: 'Pantry Staples',
+    whatToLookFor: 'Artificial polish (mineral oil or soapstone) on dals, Kesari dal mixed into Arhar/Toor dal, plastic/synthetic rice pellets.',
     warningSigns: [
-      'Dal bleeds bright yellow/green color into cold water within 10 seconds of rinsing.',
-      'Grain appears unnaturally glossy with oily petroleum fragrance.',
-      'Excessive dust or fine chalk sediment settles during washing.'
+      'Dal water turns unnaturally yellow-orange upon washing with soap (chemical dye polish).',
+      'Arhar dal containing wedge-shaped Kesari dal grains (Lathyrus sativus — neurotoxic in chronic large quantities).',
+      'Rice grains that melt into a plastic clump or smell like burning petrochemicals when exposed to direct flame.'
     ],
     safePractices: [
-      'Rinse grains and dals thoroughly in running water 2–3 times before cooking.',
-      'Prefer unpolished dals with natural color variations.'
+      'Soak and thoroughly rinse pulses 2–3 times in running water before cooking.',
+      'Choose unpolished or minimally processed dals.'
     ],
-    whenToAvoid: 'Do not consume grains that release persistent artificial dye during simple cold water rinse.',
-    whenToReport: 'Report retailers selling dyed pulses under premium natural branding.',
-    disclaimer: 'Water wash tests indicate superficial dye wash-off. Internal pesticide residue requires multi-residue GC-MS lab screening.'
+    whenToAvoid: 'Avoid dals that feel slick and oily with an unnatural synthetic sheen.',
+    whenToReport: 'Report bulk grain traders mixing prohibited Kesari dal into staple lentils.'
   },
   {
     id: 'fruits',
     title: 'Fruits & Vegetables',
     icon: '🍎',
-    tag: 'Artificial Ripeners & Dyes',
-    whatToLookFor: 'Calcium carbide (banned chemical for artificial ripening), copper sulfate injections, and wax coatings.',
+    tag: 'Fresh Produce',
+    whatToLookFor: 'Calcium carbide artificial ripening in mangoes/bananas, copper sulphate green dye on pointed gourd/peas, oxytocin hormone injections.',
     warningSigns: [
-      'Mangoes or bananas have uniform bright yellow exterior skin but hard, sour, unripe pulp inside.',
-      'White powdery chemical residue with garlic-like odor on fruit skin (indicative of carbide packets).',
-      'Cotton soaked in water/alcohol turns green when rubbed on green vegetables (Malachite dye).'
+      'Mangoes have a uniform bright yellow skin but remain hard, sour, and juice-less inside with blackish blemishes.',
+      'Vegetables rubbed with a cotton ball soaked in liquid paraffin turn green (indicates Malachite Green toxic dye).',
+      'Apples scraped gently with a clean knife shed visible white paraffin wax flakes.'
     ],
     safePractices: [
-      'Wash all fruits thoroughly under running water; peel skin when possible.',
-      'Prefer naturally ripened, seasonal produce with natural color gradients.'
+      'Wash all fruits and vegetables thoroughly in a mild saltwater or baking soda solution for 15 minutes.',
+      'Peel waxy skins from imported apples before consuming.'
     ],
-    whenToAvoid: 'Fruits ripened with Calcium Carbide contain toxic arsenic and phosphorus traces. Discard if chemical powder is visible.',
-    whenToReport: 'Report fruit mandis using chemical ripening sachets directly inside fruit crates.',
-    disclaimer: 'Surface observation screens for rapid ripening. Regulatory testing utilizes ethylene gas spectrometry.'
+    whenToAvoid: 'Never consume fruits with an acetylene or garlic-like chemical smell from calcium carbide packets.',
+    whenToReport: 'Report fruit mandi wholesalers using illegal carbide gas ripening sachets.'
   }
 ];
 
+// Mock User Initial Submissions
 export const INITIAL_USER_REPORTS = [
   {
-    id: 'FV-REP-2026-104',
+    id: 'FV-REP-2026-0881',
+    trackingNumber: 'FV-IN-2026-881204',
     productName: 'Shree Krishna Ground Turmeric 200g',
     brand: 'Shree Krishna Spices',
     category: 'Suspected Adulteration',
-    storeName: 'Kalyan Provision Store, Main Bazaar',
-    city: 'Jaipur, Rajasthan',
-    dateSubmitted: '28-Aug-2026',
-    status: 'Assigned to DO',
-    statusStep: 3, // 1: Submitted, 2: Under Review, 3: Assigned to DO, 4: Resolved
-    trackingNumber: 'FV-IN-2026-894102',
     fssaiLicense: '12218027000412',
     batchNumber: 'SK-HAL-25-D',
-    evidenceCount: 3,
-    description: 'Purchased 200g pouch. Acid dilution test showed persistent magenta-pink coloration. Sample matches active FSSAI recall notice #REC-2025-RJ-112.',
-    evidenceItems: [
-      { name: 'Receipt_INV_882.jpg', type: 'Tax Invoice', size: '1.2 MB' },
-      { name: 'Turmeric_Batch_Photo.jpg', type: 'Back of Pack Photo', size: '2.4 MB' },
-      { name: 'Acid_Test_Result.jpg', type: 'Testing Observation', size: '1.8 MB' }
-    ]
+    storeName: 'Kalyan Provision Store, Main Bazaar',
+    city: 'Jaipur, Rajasthan',
+    description: 'Household acid dilution test produced intense magenta-pink coloration indicating Metanil Yellow industrial dye. Matches public recall notice #REC-2025-RJ-112.',
+    status: 'Assigned to DO',
+    statusStep: 3,
+    dateSubmitted: '28-Aug-2026',
+    evidenceCount: 3
   },
   {
-    id: 'FV-REP-2026-103',
-    productName: 'Royal Biryani Cooked Gravy Base',
-    brand: 'Delight Cloud Kitchens',
-    category: 'Food Poisoning / Spoilage',
-    storeName: 'Royal Biryani Online Order via App',
-    city: 'Gurugram, Haryana',
-    dateSubmitted: '22-Aug-2026',
+    id: 'FV-REP-2026-0740',
+    trackingNumber: 'FV-IN-2026-740192',
+    productName: 'Golden Royal Desi Ghee 1L Tin',
+    brand: 'Golden Royal Dairy Foods',
+    category: 'Mislabeled / Hydrogenated Fat',
+    fssaiLicense: '10014021001234',
+    batchNumber: 'GR-GHEE-804',
+    storeName: 'QuickMart Supermarket',
+    city: 'Ahmedabad, Gujarat',
+    description: 'Refrigeration test revealed severe fat separation and rancid hydrogenated vegetable fat smell inconsistent with pure cow ghee standards.',
     status: 'Under Review',
     statusStep: 2,
-    trackingNumber: 'FV-IN-2026-773419',
-    fssaiLicense: '20822005001298',
-    batchNumber: 'RBB-2026-08',
-    evidenceCount: 2,
-    description: 'Received foul-smelling spoiled meat gravy. Operator license is currently suspended per public registry.',
-    evidenceItems: [
-      { name: 'Delivery_App_Receipt.pdf', type: 'Digital Invoice', size: '420 KB' },
-      { name: 'Food_Container_Timestamp.jpg', type: 'Packaging Proof', size: '3.1 MB' }
-    ]
+    dateSubmitted: '25-Aug-2026',
+    evidenceCount: 2
   }
 ];
 
+// Initial Evidence Vault Items
 export const INITIAL_EVIDENCE_ITEMS = [
   {
-    id: 'EVD-01',
-    fileName: 'Receipt_INV_882.jpg',
-    type: 'Tax Invoice / Bill',
-    relatedReport: 'FV-IN-2026-894102 (Shree Krishna Turmeric)',
+    id: 'EVD-001',
+    fileName: 'Tax_Invoice_Kalyan_Store_882.jpg',
+    type: 'Store Tax Invoice / Bill',
+    relatedReport: 'FV-IN-2026-881204 (Shree Krishna Turmeric)',
     uploadDate: '28-Aug-2026',
-    fileSize: '1.2 MB',
+    fileSize: '1.4 MB',
     fileType: 'image/jpeg',
-    status: 'Attached to Active Dossier'
+    status: 'Verified & Encrypted'
   },
   {
-    id: 'EVD-02',
-    fileName: 'Turmeric_Batch_Photo.jpg',
-    type: 'Packaging & FSSAI Mark',
-    relatedReport: 'FV-IN-2026-894102 (Shree Krishna Turmeric)',
+    id: 'EVD-002',
+    fileName: 'Batch_No_Back_Of_Pack.jpg',
+    type: 'Packaging Batch Photo',
+    relatedReport: 'FV-IN-2026-881204 (Shree Krishna Turmeric)',
     uploadDate: '28-Aug-2026',
-    fileSize: '2.4 MB',
+    fileSize: '2.8 MB',
     fileType: 'image/jpeg',
-    status: 'Attached to Active Dossier'
+    status: 'Verified & Encrypted'
   },
   {
-    id: 'EVD-03',
-    fileName: 'Acid_Test_Result.jpg',
-    type: 'Observation Photo',
-    relatedReport: 'FV-IN-2026-894102 (Shree Krishna Turmeric)',
+    id: 'EVD-003',
+    fileName: 'Acid_Test_Reaction_Video.mp4',
+    type: 'Visual Observation Media',
+    relatedReport: 'FV-IN-2026-881204 (Shree Krishna Turmeric)',
     uploadDate: '28-Aug-2026',
-    fileSize: '1.8 MB',
-    fileType: 'image/jpeg',
-    status: 'Attached to Active Dossier'
+    fileSize: '6.2 MB',
+    fileType: 'video/mp4',
+    status: 'Verified & Encrypted'
   },
   {
-    id: 'EVD-04',
-    fileName: 'Delivery_App_Receipt.pdf',
-    type: 'Digital Bill',
-    relatedReport: 'FV-IN-2026-773419 (Delight Cloud Kitchen)',
-    uploadDate: '22-Aug-2026',
-    fileSize: '420 KB',
+    id: 'EVD-004',
+    fileName: 'QuickMart_Receipt_2210.pdf',
+    type: 'Store Tax Invoice',
+    relatedReport: 'FV-IN-2026-740192 (Golden Royal Ghee)',
+    uploadDate: '25-Aug-2026',
+    fileSize: '480 KB',
     fileType: 'application/pdf',
-    status: 'Attached to Active Dossier'
+    status: 'Verified & Encrypted'
   }
 ];

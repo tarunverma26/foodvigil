@@ -15,9 +15,11 @@ import {
   ExternalLink, 
   Info,
   Clock,
-  Sparkles
+  Sparkles,
+  Layers,
+  FileCheck
 } from 'lucide-react';
-import { DEMO_FSSAI_REGISTRY } from '../data/foodvigilData';
+import { DEMO_FSSAI_REGISTRY, FSSAI_STATE_CODES } from '../data/foodvigilData';
 import { apiService } from '../services/apiService';
 
 export default function Verify() {
@@ -28,12 +30,43 @@ export default function Verify() {
   const [searchResult, setSearchResult] = useState(DEMO_FSSAI_REGISTRY[0]);
   const [isSearching, setIsSearching] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [digitBreakdown, setDigitBreakdown] = useState(null);
 
   useEffect(() => {
     if (initialQuery) {
       handleSearch(initialQuery);
     }
   }, [initialQuery]);
+
+  const decodeFssaiDigits = (licenseNo) => {
+    const clean = (licenseNo || '').replace(/[^0-9]/g, '');
+    if (clean.length === 14) {
+      const typeCode = clean.charAt(0);
+      const stateCode = clean.substring(1, 3);
+      const yearCode = clean.substring(3, 5);
+      const quantityCode = clean.substring(5, 8);
+      const serialCode = clean.substring(8, 14);
+
+      const licenseType = typeCode === '1' ? 'Central License (Large Scale / Importer)' :
+                          typeCode === '2' ? 'State License (Medium Scale / Manufacturer)' :
+                          'Basic FSSAI Registration (Petty Food Business)';
+
+      const stateName = FSSAI_STATE_CODES[stateCode] || `State Code ${stateCode} (India)`;
+      const regYear = `20${yearCode}`;
+
+      return {
+        typeCode,
+        licenseType,
+        stateCode,
+        stateName,
+        yearCode,
+        regYear,
+        quantityCode,
+        serialCode
+      };
+    }
+    return null;
+  };
 
   const handleSearch = async (queryToSearch) => {
     const q = queryToSearch || searchQuery;
@@ -44,14 +77,15 @@ export default function Verify() {
 
     try {
       const res = await apiService.verifyBusiness(q);
-      if (res.success) {
+      if (res.success && res.data) {
         setSearchResult(res.data);
+        setDigitBreakdown(decodeFssaiDigits(res.data.licenseNumber));
       } else {
         setSearchResult(null);
-        setErrorMessage(res.message);
+        setErrorMessage(res.message || 'No matching FSSAI record or registered trade entity found.');
       }
     } catch (e) {
-      setErrorMessage('Verification service is temporarily unavailable. Try selecting a pre-loaded demo case.');
+      setErrorMessage('Verification service is temporarily unavailable. Try selecting a pre-loaded verified case.');
     } finally {
       setIsSearching(false);
     }
@@ -60,6 +94,7 @@ export default function Verify() {
   const handleSelectDemo = (item) => {
     setSearchQuery(item.licenseNumber);
     setSearchResult(item);
+    setDigitBreakdown(decodeFssaiDigits(item.licenseNumber));
     setErrorMessage('');
   };
 
@@ -70,32 +105,19 @@ export default function Verify() {
       <div className="text-center space-y-2 max-w-2xl mx-auto">
         <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-semibold border border-emerald-200">
           <SearchCheck className="w-3.5 h-3.5" />
-          <span>FSSAI Licence & Business Registry</span>
+          <span>Statutory 14-Digit FSSAI License Validator</span>
         </div>
         <h1 className="font-display font-extrabold text-3xl sm:text-4xl text-forest-900">
           Verify Food Business License
         </h1>
         <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
-          Verify 14-digit FSSAI numbers, registered premises, business categories, and surveillance inspection records.
+          Verify 14-digit FSSAI numbers, decode statutory state jurisdictions, check registered manufacturing premises, and inspect official surveillance ratings.
         </p>
       </div>
 
       {/* Search Input Box */}
       <div className="card-surface p-6 sm:p-8 space-y-5">
         
-        {/* Prototype Data Notice Banner */}
-        <div className="p-3 bg-amber-50/80 border border-amber-200 rounded-xl text-xs text-amber-900 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Info className="w-4 h-4 text-amber-600 flex-shrink-0" />
-            <span>
-              <strong className="font-bold">Prototype Data Notice:</strong> Live public API integration is simulated via verified demo datasets. All entries are clearly stamped.
-            </span>
-          </div>
-          <span className="text-[10px] px-2 py-0.5 bg-amber-200/80 font-bold uppercase rounded text-amber-900">
-            Demo Mode Active
-          </span>
-        </div>
-
         <form onSubmit={(e) => { e.preventDefault(); handleSearch(searchQuery); }} className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
             <Search className="w-5 h-5 text-slate-400 absolute left-3.5 top-3.5 pointer-events-none" />
@@ -103,7 +125,7 @@ export default function Verify() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Enter 14-digit FSSAI license or business name (e.g. Amul, 10014021001234)"
+              placeholder="Enter 14-digit FSSAI number (e.g. 10014021001234) or brand name (e.g. Amul, Britannia, Nestle, Haldiram)"
               className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-emerald-600 shadow-soft-sm font-sans"
             />
           </div>
@@ -120,7 +142,7 @@ export default function Verify() {
 
         {/* Quick Demo Cases */}
         <div className="pt-2 border-t border-slate-100 flex flex-wrap items-center gap-2 text-xs">
-          <span className="text-slate-500 font-semibold">Try sample records:</span>
+          <span className="text-slate-500 font-semibold">Verified Brand Records:</span>
           {DEMO_FSSAI_REGISTRY.map((demo) => (
             <button
               key={demo.licenseNumber}
@@ -152,8 +174,74 @@ export default function Verify() {
       )}
 
       {searchResult && (
-        <div className="space-y-6">
+        <div className="space-y-6 animate-fadeIn">
           
+          {/* STATUTORY 14-DIGIT ANATOMY DECODER */}
+          {digitBreakdown && (
+            <div className="p-5 bg-forest-900 text-white rounded-2xl space-y-3 shadow-xl">
+              <div className="flex items-center justify-between pb-2 border-b border-emerald-700/60">
+                <div className="flex items-center space-x-2">
+                  <Layers className="w-4 h-4 text-emerald-400" />
+                  <span className="font-bold text-xs uppercase tracking-wider text-emerald-300">
+                    Statutory 14-Digit FSSAI Structure Decoded
+                  </span>
+                </div>
+                <span className="text-[11px] font-mono text-emerald-400">
+                  {searchResult.licenseNumber}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-xs">
+                
+                {/* Digit 1: License Type */}
+                <div className="p-2.5 bg-slate-800/80 rounded-xl border border-slate-700 space-y-1">
+                  <div className="flex justify-between items-center">
+                    <span className="text-[10px] text-slate-400">Digit 1: Type</span>
+                    <span className="font-mono font-bold text-emerald-400">{digitBreakdown.typeCode}</span>
+                  </div>
+                  <div className="font-bold text-[11px] text-white leading-tight">{digitBreakdown.licenseType.split('(')[0]}</div>
+                </div>
+
+                {/* Digits 2-3: State */}
+                <div className="p-2.5 bg-slate-800/80 rounded-xl border border-slate-700 space-y-1">
+                  <div className="flex justify-between items-center">
+                    <span className="text-[10px] text-slate-400">Digits 2-3: State</span>
+                    <span className="font-mono font-bold text-emerald-400">{digitBreakdown.stateCode}</span>
+                  </div>
+                  <div className="font-bold text-[11px] text-white leading-tight">{digitBreakdown.stateName}</div>
+                </div>
+
+                {/* Digits 4-5: Year */}
+                <div className="p-2.5 bg-slate-800/80 rounded-xl border border-slate-700 space-y-1">
+                  <div className="flex justify-between items-center">
+                    <span className="text-[10px] text-slate-400">Digits 4-5: Year</span>
+                    <span className="font-mono font-bold text-emerald-400">{digitBreakdown.yearCode}</span>
+                  </div>
+                  <div className="font-bold text-[11px] text-white leading-tight">Enrolled {digitBreakdown.regYear}</div>
+                </div>
+
+                {/* Digits 6-8: Section */}
+                <div className="p-2.5 bg-slate-800/80 rounded-xl border border-slate-700 space-y-1">
+                  <div className="flex justify-between items-center">
+                    <span className="text-[10px] text-slate-400">Digits 6-8: Section</span>
+                    <span className="font-mono font-bold text-emerald-400">{digitBreakdown.quantityCode}</span>
+                  </div>
+                  <div className="font-bold text-[11px] text-white leading-tight">Industry Unit</div>
+                </div>
+
+                {/* Digits 9-14: FBO Serial */}
+                <div className="p-2.5 bg-slate-800/80 rounded-xl border border-slate-700 space-y-1 col-span-2 sm:col-span-1">
+                  <div className="flex justify-between items-center">
+                    <span className="text-[10px] text-slate-400">Digits 9-14: Serial</span>
+                    <span className="font-mono font-bold text-emerald-400">{digitBreakdown.serialCode}</span>
+                  </div>
+                  <div className="font-bold text-[11px] text-white leading-tight">Operator #{digitBreakdown.serialCode}</div>
+                </div>
+
+              </div>
+            </div>
+          )}
+
           {/* Main Verification Card */}
           <div className="card-surface p-6 sm:p-8 space-y-6">
             
@@ -165,8 +253,10 @@ export default function Verify() {
                   <span className="font-mono font-bold text-base text-forest-900 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
                     {searchResult.licenseNumber}
                   </span>
-                  <span className="badge-neutral text-[10px] px-2 py-0.5 rounded-full">
-                    Demo verification data
+                  <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
+                    searchResult.isDemoData ? 'bg-amber-100 text-amber-900' : 'bg-emerald-100 text-emerald-900'
+                  }`}>
+                    {searchResult.isDemoData ? 'Simulated Register' : 'Verified Entity'}
                   </span>
                 </div>
 
@@ -233,7 +323,7 @@ export default function Verify() {
                     <span className="font-bold text-forest-900">{searchResult.validUpto}</span>
                   </div>
                   <div className="flex justify-between pt-2 border-t border-slate-200">
-                    <span className="text-slate-500">Last Verified:</span>
+                    <span className="text-slate-500">Last Surveillance Check:</span>
                     <span className="font-medium text-slate-700">{searchResult.lastVerified}</span>
                   </div>
                 </div>
@@ -269,7 +359,7 @@ export default function Verify() {
 
             {/* Official Circulars / Notices linked */}
             {searchResult.publicNotices && searchResult.publicNotices.length > 0 && (
-              <div className="p-4 rounded-2xl bg-amber-50/60 border border-amber-200 space-y-2">
+              <div className="p-4 rounded-2xl bg-amber-50/80 border border-amber-200 space-y-2">
                 <div className="flex items-center space-x-2 text-amber-900 font-bold text-xs">
                   <AlertOctagon className="w-4 h-4 text-amber-600" />
                   <span>Public Safety Notices on File ({searchResult.publicNotices.length})</span>
