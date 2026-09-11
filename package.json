@@ -6,9 +6,15 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "server:x402": "cd x402-server && npm start"
   },
   "dependencies": {
+    "@x402-avm/extensions": "^2.6.1",
+    "@x402/avm": "^2.25.0",
+    "@x402/core": "^2.25.0",
+    "@x402/hono": "^2.25.0",
+    "algosdk": "^3.7.0",
     "canvas-confetti": "^1.9.4",
     "clsx": "^2.1.1",
     "jspdf": "^2.5.2",
@@ -17,7 +23,8 @@
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.29.0",
     "recharts": "^2.15.1",
-    "tailwind-merge": "^2.6.0"
+    "tailwind-merge": "^2.6.0",
+    "tesseract.js": "^7.0.0"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.4",

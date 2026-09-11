@@ -112,13 +112,13 @@ export default function ReportIssue() {
       {/* Header */}
       <div className="text-center space-y-2 max-w-2xl mx-auto">
         <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-rose-50 text-rose-800 text-xs font-semibold border border-rose-200">
-          <FileWarning className="w-3.5 h-3.5" />
+          <FileWarning className="w-3.5 h-3.5 text-brand-red" />
           <span>Consumer Grievance Intake</span>
         </div>
         <h1 className="font-display font-extrabold text-3xl sm:text-4xl text-forest-900">
           Report a Food Safety Issue
         </h1>
-        <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
+        <p className="text-brand-muted text-xs sm:text-sm leading-relaxed">
           Follow our guided reporting system to capture verifiable product details, evidence photos, and generate structured consumer dossiers for regulatory review.
         </p>
       </div>
@@ -128,7 +128,7 @@ export default function ReportIssue() {
         
         {/* Stepper Progress */}
         <div>
-          <div className="flex items-center justify-between text-xs pb-2 border-b border-slate-100">
+          <div className="flex items-center justify-between text-xs pb-2 border-b border-brand-border">
             <span className="font-bold text-forest-900 uppercase tracking-wider">
               Step {step} of 4: {
                 step === 1 ? 'Select Issue Nature' :
@@ -136,7 +136,7 @@ export default function ReportIssue() {
                 step === 3 ? 'Evidence Checklist & Details' : 'Review & Submit Report'
               }
             </span>
-            <span className="text-slate-400 font-mono">{step * 25}%</span>
+            <span className="text-brand-muted font-mono font-bold">{step * 25}%</span>
           </div>
 
           <div className="grid grid-cols-4 gap-2 mt-2">
@@ -144,7 +144,7 @@ export default function ReportIssue() {
               <div 
                 key={s} 
                 className={`h-1.5 rounded-full transition-all duration-300 ${
-                  step >= s ? 'bg-forest-900' : 'bg-slate-200'
+                  step >= s ? 'bg-forest-900' : 'bg-brand-border'
                 }`} 
               />
             ))}
@@ -154,7 +154,7 @@ export default function ReportIssue() {
         {/* STEP 1: WHAT HAPPENED? */}
         {step === 1 && (
           <div className="space-y-4 animate-fadeIn">
-            <h3 className="font-bold text-sm text-slate-900">
+            <h3 className="font-bold text-sm text-forest-900">
               What type of food safety issue are you reporting?
             </h3>
 
@@ -167,19 +167,19 @@ export default function ReportIssue() {
                     onClick={() => setFormData({ ...formData, issueType: opt.label })}
                     className={`p-4 rounded-xl cursor-pointer border transition-all ${
                       isSelected
-                        ? 'bg-forest-50 border-emerald-600 shadow-soft-sm ring-1 ring-emerald-600'
-                        : 'bg-white border-slate-200 hover:border-slate-300'
+                        ? 'bg-emerald-50/70 border-forest-800 shadow-soft-sm ring-1 ring-forest-800'
+                        : 'bg-white border-brand-border hover:border-brand-muted/40'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-1">
-                      <span className="font-bold text-xs text-slate-900">{opt.label}</span>
+                      <span className="font-bold text-xs text-brand-text">{opt.label}</span>
                       <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${
-                        isSelected ? 'bg-emerald-600 border-emerald-600 text-white' : 'border-slate-300'
+                        isSelected ? 'bg-forest-800 border-forest-800 text-white' : 'border-brand-border'
                       }`}>
                         {isSelected && <CheckCircle2 className="w-3 h-3 stroke-[3]" />}
                       </div>
                     </div>
-                    <p className="text-[11px] text-slate-500 leading-snug">{opt.desc}</p>
+                    <p className="text-[11px] text-brand-muted leading-snug">{opt.desc}</p>
                   </div>
                 );
               })}
@@ -190,95 +190,95 @@ export default function ReportIssue() {
         {/* STEP 2: PRODUCT & VENDOR INFO */}
         {step === 2 && (
           <div className="space-y-4 text-xs animate-fadeIn">
-            <h3 className="font-bold text-sm text-slate-900">
+            <h3 className="font-bold text-sm text-forest-900">
               Product & Vendor Particulars
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Product Name & Package Size *</label>
+                <label className="block font-semibold text-brand-text mb-1">Product Name & Package Size *</label>
                 <input
                   type="text"
                   required
                   value={formData.productName}
                   onChange={(e) => setFormData({ ...formData, productName: e.target.value })}
                   placeholder="e.g. Pure Desi Cow Ghee 500g"
-                  className="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-emerald-600"
+                  className="w-full p-2.5 bg-white border border-brand-border rounded-xl text-brand-text focus:outline-none focus:border-forest-800 shadow-soft-sm"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Brand / Manufacturer *</label>
+                <label className="block font-semibold text-brand-text mb-1">Brand / Manufacturer *</label>
                 <input
                   type="text"
                   required
                   value={formData.brand}
                   onChange={(e) => setFormData({ ...formData, brand: e.target.value })}
                   placeholder="e.g. ABC Foods Ltd"
-                  className="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-emerald-600"
+                  className="w-full p-2.5 bg-white border border-brand-border rounded-xl text-brand-text focus:outline-none focus:border-forest-800 shadow-soft-sm"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">14-Digit FSSAI License</label>
+                <label className="block font-semibold text-brand-text mb-1">14-Digit FSSAI License</label>
                 <input
                   type="text"
                   maxLength={14}
                   value={formData.fssaiLicense}
                   onChange={(e) => setFormData({ ...formData, fssaiLicense: e.target.value.replace(/[^0-9]/g, '') })}
                   placeholder="Printed on pack"
-                  className="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-mono focus:outline-none focus:border-emerald-600"
+                  className="w-full p-2.5 bg-white border border-brand-border rounded-xl text-brand-text font-mono focus:outline-none focus:border-forest-800 shadow-soft-sm"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Batch / Lot Number *</label>
+                <label className="block font-semibold text-brand-text mb-1">Batch / Lot Number *</label>
                 <input
                   type="text"
                   required
                   value={formData.batchNumber}
                   onChange={(e) => setFormData({ ...formData, batchNumber: e.target.value })}
                   placeholder="e.g. B-882"
-                  className="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-mono focus:outline-none focus:border-emerald-600"
+                  className="w-full p-2.5 bg-white border border-brand-border rounded-xl text-brand-text font-mono focus:outline-none focus:border-forest-800 shadow-soft-sm"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Expiry / Best Before Date</label>
+                <label className="block font-semibold text-brand-text mb-1">Expiry / Best Before Date</label>
                 <input
                   type="text"
                   value={formData.expiryDate}
                   onChange={(e) => setFormData({ ...formData, expiryDate: e.target.value })}
                   placeholder="DD-MM-YYYY"
-                  className="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-emerald-600"
+                  className="w-full p-2.5 bg-white border border-brand-border rounded-xl text-brand-text focus:outline-none focus:border-forest-800 shadow-soft-sm"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Store / Merchant Name *</label>
+                <label className="block font-semibold text-brand-text mb-1">Store / Merchant Name *</label>
                 <input
                   type="text"
                   required
                   value={formData.storeName}
                   onChange={(e) => setFormData({ ...formData, storeName: e.target.value })}
                   placeholder="e.g. Modern Retail Mart / Quick Commerce App"
-                  className="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-emerald-600"
+                  className="w-full p-2.5 bg-white border border-brand-border rounded-xl text-brand-text focus:outline-none focus:border-forest-800 shadow-soft-sm"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Location / City *</label>
+                <label className="block font-semibold text-brand-text mb-1">Location / City *</label>
                 <input
                   type="text"
                   required
                   value={formData.location}
                   onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                   placeholder="City, Market Area, State"
-                  className="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-emerald-600"
+                  className="w-full p-2.5 bg-white border border-brand-border rounded-xl text-brand-text focus:outline-none focus:border-forest-800 shadow-soft-sm"
                 />
               </div>
             </div>
@@ -288,13 +288,13 @@ export default function ReportIssue() {
         {/* STEP 3: EVIDENCE CHECKLIST & DESCRIPTION */}
         {step === 3 && (
           <div className="space-y-5 text-xs animate-fadeIn">
-            <h3 className="font-bold text-sm text-slate-900">
+            <h3 className="font-bold text-sm text-forest-900">
               Evidence Checklist & Observation Description
             </h3>
 
             {/* Evidence Checklist */}
-            <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
-              <span className="font-bold text-slate-800 block text-xs">
+            <div className="p-4 bg-brand-bg/40 border border-brand-border rounded-2xl space-y-3">
+              <span className="font-bold text-brand-text block text-xs">
                 Verification & Evidence Checklist:
               </span>
               
@@ -308,39 +308,39 @@ export default function ReportIssue() {
                 ].map((item) => (
                   <label 
                     key={item.key} 
-                    className="flex items-center space-x-2.5 p-2 bg-white rounded-lg border border-slate-200 cursor-pointer"
+                    className="flex items-center space-x-2.5 p-2 bg-white rounded-lg border border-brand-border cursor-pointer shadow-soft-sm"
                   >
                     <input
                       type="checkbox"
                       checked={formData.checklist[item.key]}
                       onChange={() => handleToggleChecklist(item.key)}
-                      className="rounded accent-emerald-600 w-4 h-4"
+                      className="rounded accent-forest-800 w-4 h-4"
                     />
-                    <span className="font-semibold text-slate-800">{item.label}</span>
+                    <span className="font-semibold text-brand-text">{item.label}</span>
                   </label>
                 ))}
               </div>
             </div>
 
             <div>
-              <label className="block font-semibold text-slate-700 mb-1">Detailed Grievance Description *</label>
+              <label className="block font-semibold text-brand-text mb-1">Detailed Grievance Description *</label>
               <textarea
                 rows={3}
                 required
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-emerald-600"
+                className="w-full p-3 bg-white border border-brand-border rounded-xl text-brand-text focus:outline-none focus:border-forest-800 shadow-soft-sm"
               />
             </div>
 
             <div>
-              <label className="block font-semibold text-slate-700 mb-1">Health Symptoms or Adverse Effects (if any)</label>
+              <label className="block font-semibold text-brand-text mb-1">Health Symptoms or Adverse Effects (if any)</label>
               <input
                 type="text"
                 value={formData.healthImpact}
                 onChange={(e) => setFormData({ ...formData, healthImpact: e.target.value })}
                 placeholder="e.g. Stomach cramping, nausea within 2 hours of consumption"
-                className="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-emerald-600"
+                className="w-full p-2.5 bg-white border border-brand-border rounded-xl text-brand-text focus:outline-none focus:border-forest-800 shadow-soft-sm"
               />
             </div>
           </div>
@@ -355,42 +355,42 @@ export default function ReportIssue() {
             </div>
 
             {/* Review Summary Card */}
-            <div className="p-5 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
-              <div className="flex justify-between items-center pb-2 border-b border-slate-200">
-                <span className="font-bold text-slate-900 text-sm">{formData.productName}</span>
+            <div className="p-5 bg-brand-bg/40 border border-brand-border rounded-2xl space-y-3">
+              <div className="flex justify-between items-center pb-2 border-b border-brand-border">
+                <span className="font-bold text-brand-text text-sm">{formData.productName}</span>
                 <span className="badge-urgent text-[10px] px-2.5 py-0.5 rounded-full">{formData.issueType}</span>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-slate-600">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-brand-muted">
                 <div>
-                  <span className="text-[10px] text-slate-400 block">Brand:</span>
-                  <span className="font-semibold text-slate-800">{formData.brand}</span>
+                  <span className="text-[10px] text-brand-muted block">Brand:</span>
+                  <span className="font-semibold text-brand-text">{formData.brand}</span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-slate-400 block">Batch No:</span>
-                  <span className="font-mono font-semibold text-slate-800">{formData.batchNumber}</span>
+                  <span className="text-[10px] text-brand-muted block">Batch No:</span>
+                  <span className="font-mono font-semibold text-brand-text">{formData.batchNumber}</span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-slate-400 block">FSSAI License:</span>
-                  <span className="font-mono font-semibold text-slate-800">{formData.fssaiLicense || 'Not provided'}</span>
+                  <span className="text-[10px] text-brand-muted block">FSSAI License:</span>
+                  <span className="font-mono font-semibold text-brand-text">{formData.fssaiLicense || 'Not provided'}</span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-slate-400 block">Vendor / Store:</span>
-                  <span className="font-semibold text-slate-800">{formData.storeName}</span>
+                  <span className="text-[10px] text-brand-muted block">Vendor / Store:</span>
+                  <span className="font-semibold text-brand-text">{formData.storeName}</span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-slate-400 block">City:</span>
-                  <span className="font-semibold text-slate-800">{formData.location}</span>
+                  <span className="text-[10px] text-brand-muted block">City:</span>
+                  <span className="font-semibold text-brand-text">{formData.location}</span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-slate-400 block">Attached Evidence:</span>
-                  <span className="font-semibold text-emerald-800">{formData.evidenceFiles.length} files attached</span>
+                  <span className="text-[10px] text-brand-muted block">Attached Evidence:</span>
+                  <span className="font-semibold text-forest-800">{formData.evidenceFiles.length} files attached</span>
                 </div>
               </div>
 
-              <div className="pt-2 border-t border-slate-200 text-slate-700">
-                <span className="font-bold text-slate-900 block text-[11px] mb-0.5">Statement:</span>
-                <p className="leading-relaxed bg-white p-3 rounded-xl border border-slate-200 font-mono text-[11px]">
+              <div className="pt-2 border-t border-brand-border text-brand-text">
+                <span className="font-bold text-forest-900 block text-[11px] mb-0.5">Statement:</span>
+                <p className="leading-relaxed bg-white p-3 rounded-xl border border-brand-border font-mono text-[11px] text-brand-text">
                   {formData.description}
                 </p>
               </div>
@@ -399,7 +399,7 @@ export default function ReportIssue() {
         )}
 
         {/* Wizard Controls */}
-        <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
+        <div className="pt-4 border-t border-brand-border flex items-center justify-between">
           {step > 1 ? (
             <button
               type="button"
@@ -425,7 +425,7 @@ export default function ReportIssue() {
               type="button"
               onClick={handleSubmit}
               disabled={isSubmitting}
-              className="btn-forest py-2.5 px-8 text-xs font-bold uppercase tracking-wider shadow-sm"
+              className="btn-orange py-2.5 px-8 text-xs font-bold uppercase tracking-wider shadow-sm"
             >
               <Sparkles className="w-4 h-4" />
               <span>{isSubmitting ? 'Submitting Report...' : 'Submit Report to Vault'}</span>
