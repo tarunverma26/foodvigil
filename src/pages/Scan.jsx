@@ -12,9 +12,10 @@ import {
   ChevronRight,
   Info,
   Image as ImageIcon,
-  Check
+  Check,
+  AlertOctagon,
+  Eye
 } from 'lucide-react';
-import { createWorker } from 'tesseract.js';
 import { SAMPLE_PRODUCTS } from '../data/foodvigilData';
 import { apiService } from '../services/apiService';
 
@@ -24,9 +25,7 @@ export default function Scan() {
   const [manualText, setManualText] = useState('');
   const [productTitleInput, setProductTitleInput] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
-  const [ocrProgress, setOcrProgress] = useState(0);
-  const [ocrStatusText, setOcrStatusText] = useState('');
-  const [extractedOcrText, setExtractedOcrText] = useState('');
+  const [statusText, setStatusText] = useState('');
   const [uploadedImagePreview, setUploadedImagePreview] = useState(null);
   const [cameraActive, setCameraActive] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -36,57 +35,43 @@ export default function Scan() {
 
   // Quick preset click
   const handleSelectPreset = (preset) => {
-    navigate(`/scan/result?preset=${preset.id}`);
+    navigate('/scan/result', { state: { scanData: preset } });
   };
 
-  // Run Real Optical Character Recognition (OCR) using Tesseract.js
-  const runOcrOnImage = async (imageSource) => {
+  // Direct Multimodal Gemini Vision Scan Pipeline
+  const processImageWithGemini = async (imageSource) => {
     setIsProcessing(true);
-    setOcrProgress(10);
-    setOcrStatusText('Initializing Optical Character Recognition engine...');
+    setStatusText('Sending physical packaging photo to Gemini 2.5 Multimodal Vision API...');
     setErrorMessage('');
 
     try {
-      const worker = await createWorker('eng');
-      
-      setOcrProgress(30);
-      setOcrStatusText('Scanning label text & identifying character glyphs...');
+      // Direct call to single multimodal endpoint (with fresh image data)
+      const response = await apiService.analyzeLabel({
+        text: null,
+        presetId: null,
+        imagePreview: imageSource,
+        productName: productTitleInput || undefined
+      });
 
-      const ret = await worker.recognize(imageSource);
-      await worker.terminate();
-
-      const rawText = ret.data.text.trim();
-      setOcrProgress(80);
-      setOcrStatusText('Text recognized! Parsing ingredients, INS codes & nutrition...');
-
-      if (rawText.length > 5) {
-        setExtractedOcrText(rawText);
-        // Process extracted text with API service
-        const response = await apiService.analyzeLabel({
-          text: rawText,
-          presetId: null,
-          imagePreview: typeof imageSource === 'string' ? imageSource : null,
-          productName: productTitleInput || undefined
-        });
-
-        setOcrProgress(100);
+      if (response.success && response.data) {
+        setStatusText('Structured ingredient data extracted! Loading safety dossier...');
         setTimeout(() => {
           setIsProcessing(false);
-          if (response.success) {
-            navigate('/scan/result', { state: { product: response.data } });
-          }
-        }, 600);
+          navigate('/scan/result', { state: { scanData: response.data } });
+        }, 500);
       } else {
-        // Text is sparse, let user review or edit
-        setOcrStatusText('Low contrast text detected. Please review or type ingredients.');
+        // Requirement #6: Explicit error state, never silently fall back
         setIsProcessing(false);
-        setManualText(rawText);
-        setActiveTab('manual');
+        setErrorMessage(
+          response.error || 'Gemini Vision AI analysis could not complete. Please provide a clear, well-lit photo of the label.'
+        );
       }
-    } catch (ocrErr) {
-      console.warn('Tesseract OCR error:', ocrErr);
-      setErrorMessage('OCR engine encountered low image resolution. You can type or paste the ingredients manually.');
+    } catch (err) {
+      console.error('Gemini Multimodal Scan error:', err);
       setIsProcessing(false);
+      setErrorMessage(
+        `Analysis failed: ${err.message || 'Unable to reach backend vision service'}. Please retry with a clear photo.`
+      );
     }
   };
 
@@ -94,11 +79,12 @@ export default function Scan() {
   const handleFileUpload = (e) => {
     const file = e.target.files?.[0];
     if (file) {
+      setErrorMessage('');
       const reader = new FileReader();
       reader.onload = (event) => {
         const dataUrl = event.target.result;
         setUploadedImagePreview(dataUrl);
-        runOcrOnImage(dataUrl);
+        processImageWithGemini(dataUrl);
       };
       reader.readAsDataURL(file);
     }
@@ -119,6 +105,7 @@ export default function Scan() {
       }
     } catch (err) {
       console.warn('Camera stream notice:', err);
+      setErrorMessage('Could not open camera stream. Please upload an image file instead.');
     }
   };
 
@@ -140,7 +127,7 @@ export default function Scan() {
         tracks.forEach(track => track.stop());
       }
 
-      runOcrOnImage(dataUrl);
+      processImageWithGemini(dataUrl);
     }
   };
 
@@ -150,8 +137,8 @@ export default function Scan() {
     if (!manualText.trim()) return;
 
     setIsProcessing(true);
-    setOcrProgress(50);
-    setOcrStatusText('Analyzing ingredients & matching statutory safety regulations...');
+    setStatusText('Parsing declared ingredients & classifying safety thresholds...');
+    setErrorMessage('');
 
     try {
       const response = await apiService.analyzeLabel({
@@ -161,8 +148,10 @@ export default function Scan() {
         productName: productTitleInput || undefined
       });
 
-      if (response.success) {
-        navigate('/scan/result', { state: { product: response.data } });
+      if (response.success && response.data) {
+        navigate('/scan/result', { state: { scanData: response.data } });
+      } else {
+        setErrorMessage(response.error || 'Could not parse manual ingredients.');
       }
     } catch (err) {
       setErrorMessage('Analysis service temporarily unavailable.');
@@ -178,261 +167,234 @@ export default function Scan() {
       {/* Header */}
       <div className="text-center space-y-2 max-w-2xl mx-auto">
         <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-semibold border border-emerald-200">
-          <Camera className="w-3.5 h-3.5" />
-          <span>Real Optical Label OCR Scanner</span>
+          <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+          <span>Gemini 2.5 Multimodal Vision AI</span>
         </div>
         <h1 className="font-display font-extrabold text-3xl sm:text-4xl text-forest-900">
-          Scan & Analyze Any Food Product
+          AI Food Label Scanner
         </h1>
         <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
-          Upload any packaged food photo, take a picture with your camera, or type ingredients. Our OCR engine extracts exact declared ingredients, INS additive codes, allergens, and nutritional facts.
+          Upload any physical food packaging photo. Gemini Multimodal AI extracts the exact printed ingredient list, INS additives, and categorizes them into Good, Neutral, and Harmful groups.
         </p>
       </div>
 
-      {/* Main Scanner Box */}
-      <div className="card-surface p-6 sm:p-8 space-y-6">
-        
-        {/* Method Tabs */}
-        <div className="flex p-1 bg-slate-100 rounded-xl max-w-md mx-auto">
+      {/* Tabs Switcher */}
+      <div className="flex justify-center">
+        <div className="inline-flex p-1 bg-slate-200/80 rounded-2xl border border-slate-300/80 shadow-soft-sm">
           <button
-            onClick={() => { setActiveTab('upload'); setCameraActive(false); }}
-            className={`flex-1 py-2 text-xs font-semibold rounded-lg flex items-center justify-center space-x-1.5 transition-all ${
-              activeTab === 'upload' ? 'bg-white text-forest-900 shadow-soft-sm font-bold' : 'text-slate-600 hover:text-slate-900'
+            onClick={() => { setActiveTab('upload'); setCameraActive(false); setErrorMessage(''); }}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-2 ${
+              activeTab === 'upload'
+                ? 'bg-white text-forest-900 shadow-soft-sm'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            <Upload className="w-3.5 h-3.5" />
+            <Upload className="w-4 h-4" />
             <span>Upload Photo</span>
           </button>
 
           <button
             onClick={() => { setActiveTab('camera'); handleStartCamera(); }}
-            className={`flex-1 py-2 text-xs font-semibold rounded-lg flex items-center justify-center space-x-1.5 transition-all ${
-              activeTab === 'camera' ? 'bg-white text-forest-900 shadow-soft-sm font-bold' : 'text-slate-600 hover:text-slate-900'
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-2 ${
+              activeTab === 'camera'
+                ? 'bg-white text-forest-900 shadow-soft-sm'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            <Camera className="w-3.5 h-3.5" />
+            <Camera className="w-4 h-4" />
             <span>Live Camera</span>
           </button>
 
           <button
-            onClick={() => { setActiveTab('manual'); setCameraActive(false); }}
-            className={`flex-1 py-2 text-xs font-semibold rounded-lg flex items-center justify-center space-x-1.5 transition-all ${
-              activeTab === 'manual' ? 'bg-white text-forest-900 shadow-soft-sm font-bold' : 'text-slate-600 hover:text-slate-900'
+            onClick={() => { setActiveTab('manual'); setCameraActive(false); setErrorMessage(''); }}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-2 ${
+              activeTab === 'manual'
+                ? 'bg-white text-forest-900 shadow-soft-sm'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            <FileText className="w-3.5 h-3.5" />
+            <FileText className="w-4 h-4" />
             <span>Type Ingredients</span>
           </button>
+
+          <button
+            onClick={() => { setActiveTab('demo'); setCameraActive(false); setErrorMessage(''); }}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-2 ${
+              activeTab === 'demo'
+                ? 'bg-white text-forest-900 shadow-soft-sm'
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            <Zap className="w-4 h-4 text-amber-500" />
+            <span>Quick Demos</span>
+          </button>
         </div>
-
-        {/* Error / Fallback Alert if any */}
-        {errorMessage && (
-          <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0" />
-              <span>{errorMessage}</span>
-            </div>
-            <button
-              onClick={() => setActiveTab('manual')}
-              className="text-emerald-800 font-bold hover:underline"
-            >
-              Enter Text Manually
-            </button>
-          </div>
-        )}
-
-        {/* Live OCR Progress Bar */}
-        {isProcessing && (
-          <div className="p-5 bg-forest-50/80 rounded-2xl border border-emerald-300 space-y-3 animate-fadeIn">
-            <div className="flex items-center justify-between text-xs font-bold text-forest-900">
-              <div className="flex items-center space-x-2">
-                <Sparkles className="w-4 h-4 text-emerald-600 animate-spin" />
-                <span>{ocrStatusText}</span>
-              </div>
-              <span className="font-mono text-emerald-700">{ocrProgress}%</span>
-            </div>
-
-            <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-emerald-600 transition-all duration-300 rounded-full"
-                style={{ width: `${ocrProgress}%` }}
-              />
-            </div>
-          </div>
-        )}
-
-        {/* TAB 1: UPLOAD PHOTO */}
-        {activeTab === 'upload' && !isProcessing && (
-          <div className="space-y-4">
-            <label className="border-2 border-dashed border-slate-300 hover:border-emerald-600 rounded-2xl p-8 sm:p-12 flex flex-col items-center justify-center cursor-pointer bg-slate-50/50 hover:bg-emerald-50/20 transition-all text-center group">
-              <input 
-                type="file" 
-                accept="image/*" 
-                onChange={handleFileUpload} 
-                className="hidden" 
-              />
-              
-              {uploadedImagePreview ? (
-                <div className="space-y-3">
-                  <img src={uploadedImagePreview} alt="Uploaded Label" className="w-48 h-48 object-cover rounded-xl mx-auto shadow-soft-md" />
-                  <p className="text-xs font-semibold text-emerald-800">Click to choose a different photo</p>
-                </div>
-              ) : (
-                <div className="space-y-3 max-w-sm">
-                  <div className="w-14 h-14 rounded-2xl bg-white border border-slate-200 flex items-center justify-center mx-auto text-emerald-700 shadow-soft-sm group-hover:scale-105 transition-transform">
-                    <Upload className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-sm text-slate-800">Click to upload food label photo</h4>
-                    <p className="text-xs text-slate-500 mt-1">
-                      Clear photograph of back-of-pack ingredients table, nutrition panel, or FSSAI number (JPEG, PNG, WebP).
-                    </p>
-                  </div>
-                  <span className="inline-block px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-[11px] font-bold">
-                    Powered by Real OCR Engine
-                  </span>
-                </div>
-              )}
-            </label>
-          </div>
-        )}
-
-        {/* TAB 2: LIVE CAMERA */}
-        {activeTab === 'camera' && !isProcessing && (
-          <div className="space-y-4">
-            <div className="relative w-full max-w-md mx-auto h-72 sm:h-80 bg-slate-900 rounded-2xl overflow-hidden flex items-center justify-center shadow-soft-md">
-              <video 
-                ref={videoRef} 
-                autoPlay 
-                playsInline 
-                muted 
-                className="w-full h-full object-cover" 
-              />
-              
-              {/* Viewfinder Target Guidelines */}
-              <div className="absolute inset-8 border-2 border-dashed border-white/70 rounded-xl pointer-events-none flex flex-col justify-between p-3">
-                <div className="text-center">
-                  <span className="text-[10px] uppercase font-bold tracking-widest text-white/90 bg-black/50 px-2.5 py-0.5 rounded-full backdrop-blur-sm">
-                    Align Food Label Inside Box
-                  </span>
-                </div>
-                <div className="text-center text-[10px] text-white/80 bg-black/40 px-2 py-0.5 rounded-full self-center">
-                  Hold steady for clear character capture
-                </div>
-              </div>
-            </div>
-
-            <div className="flex justify-center">
-              <button
-                type="button"
-                onClick={handleCapturePhoto}
-                className="btn-forest py-3 px-8 text-xs shadow-md font-bold uppercase tracking-wider"
-              >
-                <Camera className="w-4 h-4" />
-                <span>Snap & Run OCR</span>
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* TAB 3: MANUAL INGREDIENTS INPUT */}
-        {activeTab === 'manual' && !isProcessing && (
-          <form onSubmit={handleManualSubmit} className="space-y-4">
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
-                Product Name / Brand (Optional):
-              </label>
-              <input
-                type="text"
-                value={productTitleInput}
-                onChange={(e) => setProductTitleInput(e.target.value)}
-                placeholder="e.g. Britannia 50-50 Maska Chaska, Haldiram Bhujia, Maggi Noodles..."
-                className="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-emerald-600 mb-3"
-              />
-
-              <label className="block text-xs font-bold text-slate-700 mb-1">
-                Ingredients List / Label Text: *
-              </label>
-              <textarea
-                rows={5}
-                required
-                value={manualText}
-                onChange={(e) => setManualText(e.target.value)}
-                placeholder="e.g. Whole Wheat Flour (56%), Edible Vegetable Oil, Sugar, Salt, Flavour Enhancer (INS 621), Synthetic Colour (INS 102, INS 110), Preservative (INS 211), Antioxidant (INS 319)..."
-                className="w-full p-3.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-emerald-600 font-mono leading-relaxed"
-              />
-              <p className="text-[11px] text-slate-500 mt-1">
-                Type or paste ingredients separated by commas. Any INS or E numbers (e.g. INS 621, INS 102, INS 211, INS 319) will be detected automatically.
-              </p>
-            </div>
-
-            <button
-              type="submit"
-              disabled={!manualText.trim()}
-              className="w-full btn-forest py-3 text-xs font-bold"
-            >
-              <Sparkles className="w-4 h-4" />
-              <span>Analyze Declared Ingredients</span>
-            </button>
-          </form>
-        )}
-
       </div>
 
-      {/* QUICK PRESET LABELS (DEMO MODE) */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="font-display font-bold text-lg text-forest-900 flex items-center gap-2">
-              <Zap className="w-4 h-4 text-emerald-600" />
-              <span>Or Try Real-World Pre-loaded Benchmark Products</span>
-            </h3>
-            <p className="text-xs text-slate-500">
-              Select verified packaged food formulations from major Indian FMCG brands.
+      {/* ERROR BANNER - REQUIREMENT #6 */}
+      {errorMessage && (
+        <div className="p-4 bg-rose-50 border-2 border-rose-300 rounded-2xl flex items-start space-x-3 text-xs text-rose-900 animate-fadeIn">
+          <AlertOctagon className="w-5 h-5 text-rose-600 flex-shrink-0 mt-0.5" />
+          <div className="space-y-1">
+            <h4 className="font-bold text-sm text-rose-950">Scan Analysis Error</h4>
+            <p className="text-rose-800 leading-relaxed font-medium">{errorMessage}</p>
+            <p className="text-[11px] text-rose-700">
+              Tip: Ensure the packaging is upright, illuminated, and the ingredients list is in focus.
             </p>
           </div>
-          <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800">
-            Verified Benchmarks
-          </span>
         </div>
+      )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {SAMPLE_PRODUCTS.map((sample) => (
-            <div
-              key={sample.id}
-              onClick={() => handleSelectPreset(sample)}
-              className="card-surface p-4 cursor-pointer hover:border-emerald-500 hover:-translate-y-1 transition-all space-y-3 group"
+      {/* ACTIVE PROCESSING STATE */}
+      {isProcessing && (
+        <div className="card-surface p-8 text-center space-y-4 animate-fadeIn border-2 border-emerald-500/50">
+          <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 flex items-center justify-center mx-auto text-emerald-600">
+            <RefreshCw className="w-7 h-7 animate-spin text-emerald-600" />
+          </div>
+          <div className="space-y-1">
+            <h3 className="font-display font-extrabold text-lg text-forest-900">
+              Gemini Multimodal Vision Active
+            </h3>
+            <p className="text-xs text-slate-600 max-w-md mx-auto">{statusText}</p>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 1: UPLOAD PHOTO */}
+      {!isProcessing && activeTab === 'upload' && (
+        <div className="card-surface p-6 sm:p-10 space-y-6">
+          <div className="border-2 border-dashed border-slate-300 hover:border-emerald-500 rounded-3xl p-8 sm:p-12 text-center transition-all bg-slate-50/50 hover:bg-emerald-50/20 group">
+            <input
+              type="file"
+              accept="image/*"
+              id="file-upload"
+              onChange={handleFileUpload}
+              className="hidden"
+            />
+            <label htmlFor="file-upload" className="cursor-pointer space-y-4 block">
+              <div className="w-16 h-16 rounded-2xl bg-forest-50 group-hover:bg-forest-100 flex items-center justify-center text-emerald-700 mx-auto transition-colors shadow-soft-sm">
+                <Upload className="w-8 h-8" />
+              </div>
+              <div className="space-y-1">
+                <h3 className="font-display font-bold text-base text-slate-800 group-hover:text-forest-900">
+                  Click to select food label photo
+                </h3>
+                <p className="text-xs text-slate-500">
+                  Supports JPG, PNG, WEBP packaging photos (Direct Gemini 2.5 Multimodal Analysis)
+                </p>
+              </div>
+              <span className="btn-forest text-xs py-2.5 px-6 inline-flex shadow-sm">
+                Browse Files
+              </span>
+            </label>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 2: LIVE CAMERA */}
+      {!isProcessing && activeTab === 'camera' && (
+        <div className="card-surface p-6 sm:p-8 space-y-6 text-center">
+          <div className="relative rounded-3xl overflow-hidden bg-slate-950 aspect-video max-w-xl mx-auto shadow-xl border border-slate-800">
+            <video
+              ref={videoRef}
+              autoPlay
+              playsInline
+              muted
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 border-2 border-emerald-400/40 rounded-3xl pointer-events-none m-6 border-dashed animate-pulse" />
+          </div>
+
+          <div className="flex justify-center gap-3">
+            <button
+              onClick={handleCapturePhoto}
+              className="btn-forest py-3 px-8 text-xs font-bold uppercase tracking-wider shadow-lg flex items-center space-x-2"
             >
-              <div className="flex items-start justify-between">
-                <span className="text-3xl p-2 bg-slate-100 rounded-xl group-hover:bg-emerald-50 transition-colors">
-                  {sample.image}
-                </span>
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                  sample.status === 'good' ? 'badge-good' : sample.status === 'attention' ? 'badge-attention' : 'badge-urgent'
-                }`}>
-                  {sample.status === 'good' ? '🟢 Good' : sample.status === 'attention' ? '🟡 Attention' : '🔴 Important'}
-                </span>
-              </div>
-
-              <div>
-                <h4 className="font-bold text-xs text-slate-900 group-hover:text-emerald-800 transition-colors line-clamp-1">
-                  {sample.productName}
-                </h4>
-                <p className="text-[11px] text-slate-500 truncate">{sample.brand}</p>
-              </div>
-
-              <div className="text-[11px] text-slate-600 line-clamp-2 leading-snug">
-                {sample.explanation}
-              </div>
-
-              <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-emerald-700">
-                <span>View Snapshot</span>
-                <ChevronRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
-              </div>
-            </div>
-          ))}
+              <Camera className="w-4 h-4 text-emerald-300" />
+              <span>Capture Label</span>
+            </button>
+            <button
+              onClick={() => { setCameraActive(false); setActiveTab('upload'); }}
+              className="btn-secondary text-xs py-3 px-4"
+            >
+              Cancel
+            </button>
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* TAB 3: TYPE INGREDIENTS */}
+      {!isProcessing && activeTab === 'manual' && (
+        <form onSubmit={handleManualSubmit} className="card-surface p-6 sm:p-8 space-y-5">
+          <div className="space-y-1.5">
+            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+              Product Title (Optional)
+            </label>
+            <input
+              type="text"
+              value={productTitleInput}
+              onChange={(e) => setProductTitleInput(e.target.value)}
+              placeholder="e.g. Masala Instant Noodles or Mango Nectar"
+              className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-emerald-600"
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+              Declared Ingredients List
+            </label>
+            <textarea
+              rows={5}
+              value={manualText}
+              onChange={(e) => setManualText(e.target.value)}
+              placeholder="Paste or type ingredients list, e.g.: Refined Wheat Flour, Palm Oil, Iodised Salt, INS 621, INS 102, INS 211, INS 319, Spices..."
+              className="w-full p-3.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-sans focus:outline-none focus:border-emerald-600"
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="w-full btn-forest py-3.5 text-xs font-bold uppercase tracking-wider shadow-md"
+          >
+            Analyze Ingredients
+          </button>
+        </form>
+      )}
+
+      {/* TAB 4: QUICK DEMOS */}
+      {!isProcessing && activeTab === 'demo' && (
+        <div className="space-y-4">
+          <div className="text-center text-xs text-slate-500 font-semibold">
+            Choose a verified FMCG packaging formulation to inspect:
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            {SAMPLE_PRODUCTS.map((prod) => (
+              <button
+                key={prod.id}
+                onClick={() => handleSelectPreset(prod)}
+                className="card-surface p-5 text-left hover:border-emerald-500 hover:shadow-soft-md transition-all group space-y-2"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-2xl">{prod.image}</span>
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                    prod.status === 'urgent' ? 'bg-rose-100 text-rose-800' :
+                    prod.status === 'attention' ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'
+                  }`}>
+                    {prod.statusLabel.split(' ')[0]}
+                  </span>
+                </div>
+                <h4 className="font-bold text-xs text-slate-900 group-hover:text-forest-900">
+                  {prod.productName}
+                </h4>
+                <p className="text-[11px] text-slate-500">{prod.brand}</p>
+                <div className="text-[10px] font-mono text-emerald-700 font-semibold pt-1 border-t border-slate-100">
+                  {prod.detectedAdditives.length} Additive(s) Flagged →
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
     </div>
   );

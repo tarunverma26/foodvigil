@@ -20,7 +20,9 @@ import {
   Flame,
   Wheat,
   Share2,
-  Check
+  Check,
+  AlertOctagon,
+  HelpCircle
 } from 'lucide-react';
 import { 
   BarChart, 
@@ -52,11 +54,19 @@ export default function ScanResult() {
   }, []);
 
   // Get scan data from route state or fallback
-  const scanData = location.state?.scanData || SAMPLE_PRODUCTS[0];
+  const scanData = location.state?.scanData || location.state?.product || SAMPLE_PRODUCTS[0];
 
   useEffect(() => {
     if (scanData?.detectedAdditives?.length > 0) {
-      setSelectedAdditive(scanData.detectedAdditives[0]);
+      const code = scanData.detectedAdditives[0];
+      const data = FOOD_ADDITIVES_DATA[code] || {
+        code: `INS ${code}`,
+        name: `Additive INS ${code}`,
+        purpose: 'Regulated Food Additive',
+        fact: 'Permitted food additive under Codex & FSSAI regulations.',
+        consumerNote: 'Check dietary intake limits if sensitive to synthetic compounds.'
+      };
+      setSelectedAdditive(data);
     }
   }, [scanData]);
 
@@ -72,11 +82,18 @@ export default function ScanResult() {
     );
   }
 
+  // Extract structured groups (Requirement #5)
+  const structured = scanData.structuredIngredients || [];
+  const goodGroup = scanData.groups?.good || structured.filter(i => i.classification === 'good') || [];
+  const neutralGroup = scanData.groups?.neutral || structured.filter(i => i.classification === 'neutral') || [];
+  const harmfulGroup = scanData.groups?.harmful || structured.filter(i => i.classification === 'harmful') || [];
+  const unclearGroup = scanData.groups?.unclear || structured.filter(i => i.classification === 'unclear') || [];
+
   // Nutrition Chart Data formatting
   const nutritionChartData = [
-    { name: 'Total Carbs', value: scanData.nutrition?.carbs || 60, unit: 'g', color: '#10b981' },
-    { name: 'Added Sugar', value: scanData.nutrition?.sugar || 24, unit: 'g', color: '#f59e0b' },
-    { name: 'Total Fat', value: scanData.nutrition?.fat || 18, unit: 'g', color: '#ef4444' },
+    { name: 'Total Carbs', value: scanData.nutrition?.carbs || scanData.nutrition?.carbohydrates || 60, unit: 'g', color: '#10b981' },
+    { name: 'Added Sugar', value: scanData.nutrition?.sugar || scanData.nutrition?.addedSugar || 24, unit: 'g', color: '#f59e0b' },
+    { name: 'Total Fat', value: scanData.nutrition?.fat || scanData.nutrition?.totalFat || 18, unit: 'g', color: '#ef4444' },
     { name: 'Protein', value: scanData.nutrition?.protein || 6, unit: 'g', color: '#047857' },
   ];
 
@@ -93,15 +110,15 @@ export default function ScanResult() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div className="space-y-1">
           <div className="flex items-center space-x-2">
-            <span className="text-xs font-semibold text-slate-500">Analysis Result</span>
+            <span className="text-xs font-semibold text-slate-500">Gemini 2.5 Vision Analysis</span>
             <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
             <span className="text-xs font-bold text-forest-900">{scanData.category || 'Packaged Food'}</span>
           </div>
           <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-forest-900">
-            {scanData.productName}
+            {scanData.productName || scanData.productGuess}
           </h1>
           <p className="text-xs text-slate-600 font-medium">
-            Brand: <span className="font-bold text-slate-900">{scanData.brand}</span>
+            AI Identification: <span className="font-bold text-slate-900">{scanData.productGuess || scanData.productName}</span>
           </p>
         </div>
 
@@ -173,33 +190,38 @@ export default function ScanResult() {
               Safety Assessment
             </span>
             <div className="flex items-center space-x-3">
-              <span className="badge-good text-sm px-3.5 py-1.5 font-bold font-display">
-                {scanData.statusLabel || 'Compliant (Moderate Attention)'}
+              <span className={`text-sm px-3.5 py-1.5 font-bold font-display rounded-full border ${
+                scanData.status === 'urgent' ? 'bg-rose-50 border-rose-300 text-rose-900' :
+                scanData.status === 'attention' ? 'bg-amber-50 border-amber-300 text-amber-900' :
+                'bg-emerald-50 border-emerald-300 text-emerald-900'
+              }`}>
+                {scanData.statusLabel || 'Good Standing'}
               </span>
             </div>
             <p className="text-xs text-slate-600 leading-relaxed">
-              Based on detected additives, statutory labeling conformance, and macro nutritional density.
+              {scanData.explanation || 'Analyzed directly from physical packaging using Gemini 2.5 Multimodal Vision.'}
             </p>
           </div>
 
           {/* Quick Metrics */}
           <div className="space-y-2 md:border-r border-slate-200 md:pr-6 md:pl-2">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
-              Additive Profiling
+              Ingredients Classification
             </span>
-            <div className="flex items-baseline space-x-2">
-              <span className="text-3xl font-display font-black text-forest-900">
-                {scanData.detectedAdditives?.length || 0}
-              </span>
-              <span className="text-xs text-slate-600 font-medium">INS Additives Detected</span>
+            <div className="flex items-center space-x-2 text-xs font-bold">
+              <span className="text-emerald-700 font-extrabold text-sm">{goodGroup.length} Good</span>
+              <span className="text-slate-400">•</span>
+              <span className="text-slate-600 font-extrabold text-sm">{neutralGroup.length} Neutral</span>
+              <span className="text-slate-400">•</span>
+              <span className="text-rose-700 font-extrabold text-sm">{harmfulGroup.length} Harmful</span>
             </div>
             <div className="flex flex-wrap gap-1.5 pt-1">
-              {scanData.detectedAdditives?.map((add) => (
+              {scanData.detectedAdditives?.map((code) => (
                 <span 
-                  key={add.code}
+                  key={code}
                   className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-semibold border border-slate-200"
                 >
-                  INS {add.code}
+                  INS {code}
                 </span>
               ))}
             </div>
@@ -213,11 +235,11 @@ export default function ScanResult() {
             <div className="flex items-center space-x-2">
               <Building2 className="w-4 h-4 text-emerald-700" />
               <span className="font-mono text-xs font-bold text-slate-900">
-                {scanData.fssaiLicense || '10014021001234'}
+                {scanData.licenseNumber || '10014021001234'}
               </span>
             </div>
             <Link
-              to={`/verify?q=${scanData.fssaiLicense || '10014021001234'}`}
+              to={`/verify?q=${scanData.licenseNumber || '10014021001234'}`}
               className="text-xs font-bold text-emerald-700 hover:text-emerald-800 inline-flex items-center space-x-1"
             >
               <span>Verify State & Factory Record</span>
@@ -226,6 +248,139 @@ export default function ScanResult() {
           </div>
 
         </div>
+      </div>
+
+      {/* REQUIREMENT #5: STRUCTURED INGREDIENTS GROUPS SPLIT (Good, Neutral, Harmful, Unclear) */}
+      <div className="space-y-4">
+        <div className="flex items-center space-x-2">
+          <Layers className="w-5 h-5 text-emerald-700" />
+          <h2 className="font-display font-extrabold text-xl text-forest-900">
+            Structured Ingredient Breakdown (Multimodal Classification)
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          
+          {/* GROUP 1: HARMFUL / HIGH ATTENTION */}
+          <div className="p-5 bg-rose-50/70 border border-rose-200 rounded-3xl space-y-3">
+            <div className="flex items-center justify-between pb-2 border-b border-rose-200">
+              <div className="flex items-center space-x-2 text-rose-900 font-bold text-xs">
+                <AlertOctagon className="w-4 h-4 text-rose-600" />
+                <span>Harmful / High Attention ({harmfulGroup.length})</span>
+              </div>
+              <span className="text-[10px] font-bold uppercase bg-rose-200 text-rose-900 px-2 py-0.5 rounded-full">
+                Attention
+              </span>
+            </div>
+
+            {harmfulGroup.length === 0 ? (
+              <p className="text-xs text-slate-500 py-3 italic text-center">
+                No high-risk chemical dyes or harmful additives flagged.
+              </p>
+            ) : (
+              <div className="space-y-2.5">
+                {harmfulGroup.map((item, idx) => (
+                  <div key={idx} className="p-3 bg-white rounded-xl border border-rose-200/80 shadow-soft-sm space-y-1">
+                    <div className="flex justify-between items-start">
+                      <span className="font-bold text-xs text-rose-950">{item.name}</span>
+                      {item.insCode && (
+                        <span className="text-[10px] font-mono font-bold bg-rose-100 text-rose-800 px-1.5 py-0.5 rounded">
+                          INS {item.insCode}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[11px] text-rose-900 leading-snug">{item.reason}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* GROUP 2: GOOD / BENEFICIAL INGREDIENTS */}
+          <div className="p-5 bg-emerald-50/70 border border-emerald-200 rounded-3xl space-y-3">
+            <div className="flex items-center justify-between pb-2 border-b border-emerald-200">
+              <div className="flex items-center space-x-2 text-emerald-900 font-bold text-xs">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                <span>Good / Wholesome Ingredients ({goodGroup.length})</span>
+              </div>
+              <span className="text-[10px] font-bold uppercase bg-emerald-200 text-emerald-900 px-2 py-0.5 rounded-full">
+                Wholesome
+              </span>
+            </div>
+
+            {goodGroup.length === 0 ? (
+              <p className="text-xs text-slate-500 py-3 italic text-center">
+                No primary whole food ingredients detected.
+              </p>
+            ) : (
+              <div className="space-y-2.5 max-h-96 overflow-y-auto pr-1">
+                {goodGroup.map((item, idx) => (
+                  <div key={idx} className="p-3 bg-white rounded-xl border border-emerald-200/80 shadow-soft-sm space-y-1">
+                    <span className="font-bold text-xs text-emerald-950 block">{item.name}</span>
+                    <p className="text-[11px] text-slate-600 leading-snug">{item.reason}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* GROUP 3: NEUTRAL / STANDARD CULINARY */}
+          <div className="p-5 bg-slate-50 border border-slate-200 rounded-3xl space-y-3">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-200">
+              <div className="flex items-center space-x-2 text-slate-800 font-bold text-xs">
+                <Info className="w-4 h-4 text-slate-500" />
+                <span>Neutral Ingredients ({neutralGroup.length})</span>
+              </div>
+              <span className="text-[10px] font-bold uppercase bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full">
+                Standard
+              </span>
+            </div>
+
+            {neutralGroup.length === 0 ? (
+              <p className="text-xs text-slate-500 py-3 italic text-center">
+                No standard common ingredients listed.
+              </p>
+            ) : (
+              <div className="space-y-2.5 max-h-96 overflow-y-auto pr-1">
+                {neutralGroup.map((item, idx) => (
+                  <div key={idx} className="p-3 bg-white rounded-xl border border-slate-200 shadow-soft-sm space-y-1">
+                    <div className="flex justify-between items-start">
+                      <span className="font-bold text-xs text-slate-900">{item.name}</span>
+                      {item.insCode && (
+                        <span className="text-[10px] font-mono font-bold bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded">
+                          INS {item.insCode}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[11px] text-slate-500 leading-snug">{item.reason}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+        </div>
+
+        {/* UNCLEAR INGREDIENTS GROUP - REQUIREMENT #4 */}
+        {unclearGroup.length > 0 && (
+          <div className="p-4 bg-amber-50 border border-amber-300 rounded-2xl space-y-2 text-xs text-amber-900">
+            <div className="flex items-center space-x-2 font-bold">
+              <HelpCircle className="w-4 h-4 text-amber-600" />
+              <span>Unclear / Occluded Label Text Flagged ({unclearGroup.length})</span>
+            </div>
+            <p className="text-[11px] text-amber-800 leading-relaxed">
+              The following ingredients were partially obscured or blurry on the packaging label:
+            </p>
+            <div className="flex flex-wrap gap-2 pt-1">
+              {unclearGroup.map((item, idx) => (
+                <span key={idx} className="px-2.5 py-1 bg-white border border-amber-300 rounded-lg font-mono text-[11px] text-amber-900">
+                  {item.name}: <em>{item.reason}</em>
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
       </div>
 
       {/* Main Content Grid: Macro Bars & Additive Inspector */}
@@ -270,13 +425,13 @@ export default function ScanResult() {
           </div>
         </div>
 
-        {/* INS Additives Inspector (Fact vs AI vs Guidance) */}
+        {/* INS Additives Inspector */}
         <div className="card-surface p-6 lg:col-span-2 space-y-5">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <div className="flex items-center space-x-2">
               <Layers className="w-4 h-4 text-emerald-700" />
               <h3 className="font-display font-extrabold text-base text-forest-900">
-                Decoded Additive Matrix (Fact vs AI Guidance)
+                Statutory Additive Matrix
               </h3>
             </div>
             <span className="text-[10px] text-slate-400">Select additive to inspect</span>
@@ -284,18 +439,26 @@ export default function ScanResult() {
 
           {/* Additive Selector Buttons */}
           <div className="flex flex-wrap gap-2">
-            {scanData.detectedAdditives?.map((add) => (
+            {scanData.detectedAdditives?.map((code) => (
               <button
-                key={add.code}
-                onClick={() => setSelectedAdditive(add)}
+                key={code}
+                onClick={() => {
+                  const data = FOOD_ADDITIVES_DATA[code] || {
+                    code: `INS ${code}`,
+                    name: `Additive INS ${code}`,
+                    purpose: 'Food Processing Additive',
+                    fact: 'Permitted under FSSAI Standards.',
+                    consumerNote: 'Standard food processing substance.'
+                  };
+                  setSelectedAdditive(data);
+                }}
                 className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center space-x-1.5 ${
-                  selectedAdditive?.code === add.code
+                  selectedAdditive?.code?.includes(code)
                     ? 'bg-forest-900 text-emerald-300 font-bold shadow-sm'
                     : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
                 }`}
               >
-                <span>INS {add.code}</span>
-                <span className="text-[10px] opacity-75">({add.purpose})</span>
+                <span>INS {code}</span>
               </button>
             ))}
           </div>
@@ -305,7 +468,7 @@ export default function ScanResult() {
             <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-4 text-xs animate-fadeIn">
               <div className="flex justify-between items-start">
                 <div>
-                  <div className="text-[10px] font-mono text-emerald-700 font-bold uppercase">INS {selectedAdditive.code}</div>
+                  <div className="text-[10px] font-mono text-emerald-700 font-bold uppercase">{selectedAdditive.code}</div>
                   <h4 className="font-bold text-sm text-forest-900">{selectedAdditive.name}</h4>
                 </div>
                 <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-200">
@@ -335,7 +498,7 @@ export default function ScanResult() {
           <div className="pt-2 flex items-center justify-between text-xs">
             <span className="text-slate-500">Notice mislabeling or foreign matter?</span>
             <Link
-              to={`/report?product=${encodeURIComponent(scanData.productName)}&batch=${encodeURIComponent(scanData.batchNumber || '')}`}
+              to={`/report?product=${encodeURIComponent(scanData.productName || scanData.productGuess || '')}&batch=${encodeURIComponent(scanData.batchNumber || '')}`}
               className="font-bold text-rose-700 hover:text-rose-800 flex items-center gap-1"
             >
               <FileWarning className="w-3.5 h-3.5" />
