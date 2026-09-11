@@ -63,12 +63,15 @@ export const scanController = {
       if (apiKey && parsedImage) {
         const genAI = new GoogleGenerativeAI(apiKey);
 
-        // Candidate models per requirement (gemini-2.5-flash / gemini-2.5-flash-lite / gemini-2.0-flash / gemini-1.5-flash)
+        // Active Gemini Flash models supported by Google GenAI API endpoint
         const candidateModels = [
-          'gemini-2.5-flash',
+          'gemini-3.6-flash',
+          'gemini-3.5-flash',
+          'gemini-3.7-flash',
+          'gemini-flash-latest',
           'gemini-2.5-flash-lite',
-          'gemini-2.0-flash',
-          'gemini-1.5-flash'
+          'gemini-3.1-flash-lite',
+          'gemini-2.5-flash'
         ];
 
         const promptText = `
@@ -88,7 +91,18 @@ TASK REQUIREMENTS:
    - "reason": one short plain-language sentence explaining the classification.
 3. Provide "productGuess": a concise, accurate description of what the product appears to be from the physical packaging in this specific image.
 
-You MUST strictly output JSON matching the required schema.
+You MUST strictly output valid JSON matching this structure:
+{
+  "productGuess": "brief description of what the product appears to be, from the image",
+  "ingredients": [
+    {
+      "name": "exact ingredient name as printed",
+      "insCode": "INS number if present, else null",
+      "classification": "good" | "neutral" | "harmful" | "unclear",
+      "reason": "one short plain-language sentence"
+    }
+  ]
+}
 `;
 
         const jsonSchema = {
@@ -133,7 +147,7 @@ You MUST strictly output JSON matching the required schema.
 
         for (const modelName of candidateModels) {
           try {
-            console.log(`Calling Gemini Multimodal API (${modelName}) for image hash ${serverImageHash}...`);
+            console.log(`Calling Gemini Multimodal Vision API (${modelName}) for image hash ${serverImageHash}...`);
             const model = genAI.getGenerativeModel({
               model: modelName,
               generationConfig: {
@@ -154,8 +168,8 @@ You MUST strictly output JSON matching the required schema.
             const responseText = result.response.text();
             const geminiJson = JSON.parse(responseText);
 
-            if (geminiJson && Array.isArray(geminiJson.ingredients)) {
-              console.log(`✅ Gemini Multimodal (${modelName}) succeeded with ${geminiJson.ingredients.length} ingredients!`);
+            if (geminiJson && (geminiJson.productGuess || Array.isArray(geminiJson.ingredients))) {
+              console.log(`✅ Gemini Multimodal (${modelName}) succeeded with product: "${geminiJson.productGuess}" and ${geminiJson.ingredients?.length || 0} ingredients!`);
               
               return res.json({
                 success: true,
@@ -331,7 +345,7 @@ function formatGeminiScanResult(geminiJson, imageHash, base64Raw) {
       ? harmfulGroup.map(h => `${h.name}${h.insCode ? ` (INS ${h.insCode})` : ''}: ${h.reason}`)
       : ['No high-risk chemical colorants or banned additives detected.'],
 
-    explanation: `Gemini 2.5 Multimodal analysis completed. Formulation contains ${goodGroup.length} beneficial, ${neutralGroup.length} neutral, and ${harmfulGroup.length} flagged high-attention ingredient(s).`,
+    explanation: `Gemini Multimodal analysis completed. Formulation contains ${goodGroup.length} beneficial, ${neutralGroup.length} neutral, and ${harmfulGroup.length} flagged high-attention ingredient(s).`,
     confidence: unclearGroup.length > 0 ? 82 : 98
   };
 
