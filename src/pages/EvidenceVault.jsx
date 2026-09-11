@@ -27,24 +27,23 @@ export default function EvidenceVault() {
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
       
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-semibold border border-emerald-200 mb-2">
-            <Lock className="w-3.5 h-3.5 text-forest-800" />
-            <span>Secure Consumer Vault</span>
-          </div>
-          <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-forest-900">
-            My Evidence Vault
-          </h1>
-          <p className="text-xs text-brand-muted">
-            Centralized repository of tax invoices, packaging photos, and batch records linked to your consumer safety reports.
-          </p>
+      <div className="text-center space-y-3 max-w-2xl mx-auto p-6 sm:p-8 rounded-3xl bg-white/95 backdrop-blur-md border border-[#E8DCB8] shadow-sm">
+        <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#EAF5EE] text-[#1F5D42] text-xs font-bold border border-[#BCE2CB]">
+          <Lock className="w-3.5 h-3.5 text-[#246B4A]" />
+          <span>Secure Consumer Vault</span>
         </div>
-
-        <Link to="/report" className="btn-forest text-xs py-2 px-4 self-start sm:self-center">
-          <PlusCircle className="w-4 h-4" />
-          <span>Upload New Evidence</span>
-        </Link>
+        <h1 className="font-display font-extrabold text-3xl sm:text-4xl text-[#1F5D42]">
+          My Evidence Vault
+        </h1>
+        <p className="text-[#19352A] text-xs sm:text-sm leading-relaxed font-medium">
+          Centralized repository of tax invoices, packaging photos, and batch records linked to your consumer safety reports.
+        </p>
+        <div className="pt-2">
+          <Link to="/report" className="btn-forest text-xs py-2.5 px-5 inline-flex items-center space-x-2 font-bold shadow-sm">
+            <PlusCircle className="w-4 h-4" />
+            <span>Upload New Evidence</span>
+          </Link>
+        </div>
       </div>
 
       {/* Evidentiary Value Legal Notice */}

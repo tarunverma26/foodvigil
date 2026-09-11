@@ -30,24 +30,23 @@ export default function Dashboard() {
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
       
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-semibold border border-emerald-200 mb-2">
-            <LayoutDashboard className="w-3.5 h-3.5 text-forest-800" />
-            <span>Consumer Activity Overview</span>
-          </div>
-          <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-forest-900">
-            My Food Safety Dashboard
-          </h1>
-          <p className="text-xs text-brand-muted">
-            Track your verified product scans, grievance milestones, awareness score, and active statutory notices.
-          </p>
+      <div className="text-center space-y-3 max-w-2xl mx-auto p-6 sm:p-8 rounded-3xl bg-white/95 backdrop-blur-md border border-[#E8DCB8] shadow-sm">
+        <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#EAF5EE] text-[#1F5D42] text-xs font-bold border border-[#BCE2CB]">
+          <LayoutDashboard className="w-3.5 h-3.5 text-[#246B4A]" />
+          <span>Consumer Activity Overview</span>
         </div>
-
-        <Link to="/scan" className="btn-forest text-xs py-2.5 px-5 self-start sm:self-center shadow-sm">
-          <Camera className="w-4 h-4" />
-          <span>Scan New Product</span>
-        </Link>
+        <h1 className="font-display font-extrabold text-3xl sm:text-4xl text-[#1F5D42]">
+          My Food Safety Dashboard
+        </h1>
+        <p className="text-[#19352A] text-xs sm:text-sm leading-relaxed font-medium">
+          Track your verified product scans, grievance milestones, awareness score, and active statutory notices.
+        </p>
+        <div className="pt-2">
+          <Link to="/scan" className="btn-forest text-xs py-2.5 px-5 inline-flex items-center space-x-2 font-bold shadow-sm">
+            <Camera className="w-4 h-4" />
+            <span>Scan New Product</span>
+          </Link>
+        </div>
       </div>
 
       {/* STATS OVERVIEW CARDS */}

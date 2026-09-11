@@ -120,18 +120,18 @@ export default function ScanResult() {
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       
       {/* Top Banner Navigation & Quick Actions */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-brand-border">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 sm:p-7 rounded-3xl bg-white/95 backdrop-blur-md border border-[#E8DCB8] shadow-sm">
         <div className="space-y-1">
           <div className="flex items-center space-x-2">
-            <span className="text-xs font-semibold text-brand-muted">Gemini 2.5 Vision Analysis</span>
-            <ChevronRight className="w-3.5 h-3.5 text-brand-muted/60" />
-            <span className="text-xs font-bold text-forest-900">{scanData.category || 'Packaged Food'}</span>
+            <span className="text-xs font-semibold text-[#64776B]">Gemini Vision Analysis</span>
+            <ChevronRight className="w-3.5 h-3.5 text-[#64776B]/60" />
+            <span className="text-xs font-bold text-[#1F5D42]">{scanData.category || 'Packaged Food'}</span>
           </div>
-          <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-brand-text">
+          <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-[#1F5D42]">
             {scanData.productName || scanData.productGuess}
           </h1>
-          <p className="text-xs text-brand-muted font-medium">
-            AI Identification: <span className="font-bold text-brand-text">{scanData.productGuess || scanData.productName}</span>
+          <p className="text-xs text-[#64776B] font-medium">
+            AI Identification: <span className="font-bold text-[#19352A]">{scanData.productGuess || scanData.productName}</span>
           </p>
         </div>
 
@@ -149,7 +149,7 @@ export default function ScanResult() {
             className="btn-secondary py-2 px-3 text-xs font-medium"
             title="Share Report"
           >
-            {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Share2 className="w-3.5 h-3.5 text-brand-muted" />}
+            {copied ? <Check className="w-3.5 h-3.5 text-[#4F9D69]" /> : <Share2 className="w-3.5 h-3.5 text-[#64776B]" />}
             <span>{copied ? 'Copied' : 'Share'}</span>
           </button>
 
@@ -157,7 +157,7 @@ export default function ScanResult() {
             to="/scan"
             className="btn-secondary py-2 px-3 text-xs font-medium"
           >
-            <RotateCcw className="w-3.5 h-3.5 text-brand-muted" />
+            <RotateCcw className="w-3.5 h-3.5 text-[#64776B]" />
             <span>Scan Another</span>
           </Link>
         </div>

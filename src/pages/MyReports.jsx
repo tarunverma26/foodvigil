@@ -110,26 +110,23 @@ export default function MyReports() {
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
       
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-semibold border border-emerald-200 mb-2">
-            <FileText className="w-3.5 h-3.5 text-forest-800" />
-            <span>My Submitted Reports ({reports.length})</span>
-          </div>
-          <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-forest-900">
-            Track Food Safety Reports
-          </h1>
-          <p className="text-xs text-brand-muted">
-            View active statuses, progress milestones, and download legal-grade complaint dossiers.
-          </p>
+      <div className="text-center space-y-3 max-w-2xl mx-auto p-6 sm:p-8 rounded-3xl bg-white/95 backdrop-blur-md border border-[#E8DCB8] shadow-sm">
+        <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#EAF5EE] text-[#1F5D42] text-xs font-bold border border-[#BCE2CB]">
+          <FileText className="w-3.5 h-3.5 text-[#246B4A]" />
+          <span>My Submitted Reports ({reports.length})</span>
         </div>
-
-        <div className="flex items-center space-x-2">
-          <Link to="/evidence" className="btn-secondary text-xs py-2 px-3.5">
-            <FolderLock className="w-4 h-4 text-brand-muted" />
+        <h1 className="font-display font-extrabold text-3xl sm:text-4xl text-[#1F5D42]">
+          Track Food Safety Reports
+        </h1>
+        <p className="text-[#19352A] text-xs sm:text-sm leading-relaxed font-medium">
+          View active statuses, progress milestones, and download legal-grade complaint dossiers.
+        </p>
+        <div className="pt-2 flex flex-wrap items-center justify-center gap-2">
+          <Link to="/evidence" className="btn-secondary text-xs py-2 px-3.5 inline-flex items-center space-x-1.5 font-bold shadow-sm">
+            <FolderLock className="w-4 h-4 text-[#64776B]" />
             <span>Evidence Vault</span>
           </Link>
-          <Link to="/report" className="btn-forest text-xs py-2 px-3.5">
+          <Link to="/report" className="btn-forest text-xs py-2 px-3.5 inline-flex items-center space-x-1.5 font-bold shadow-sm">
             <PlusCircle className="w-4 h-4" />
             <span>New Report</span>
           </Link>
