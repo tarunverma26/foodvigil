@@ -91,10 +91,12 @@ TASK REQUIREMENTS:
      * "unclear": IF any part of the label text is blurry, unreadable, cut off, or occluded, mark classification as "unclear" and reason as "text not legible" rather than guessing or omitting it.
    - "reason": one short plain-language sentence explaining the classification.
 3. Provide "productGuess": a concise, accurate description of what the product appears to be from the physical packaging in this specific image.
+4. Extract the FSSAI license number if printed or visible anywhere on the packaging label as raw text digits. Do NOT attempt to verify or check whether the license is registered with the government — only read and extract the printed text digits as "fssaiNumber" (or null if not visible on the label).
 
 You MUST strictly output valid JSON matching this structure:
 {
   "productGuess": "brief description of what the product appears to be, from the image",
+  "fssaiNumber": "raw printed FSSAI number if visible, else null",
   "ingredients": [
     {
       "name": "exact ingredient name as printed",
@@ -112,6 +114,11 @@ You MUST strictly output valid JSON matching this structure:
             productGuess: {
               type: 'string',
               description: 'brief description of what the product appears to be, from the image'
+            },
+            fssaiNumber: {
+              type: 'string',
+              nullable: true,
+              description: 'raw printed FSSAI license number text if visible on pack, else null'
             },
             ingredients: {
               type: 'array',
@@ -174,7 +181,7 @@ You MUST strictly output valid JSON matching this structure:
             const durationMs = Date.now() - modelStartTime;
 
             if (geminiJson && (geminiJson.productGuess || Array.isArray(geminiJson.ingredients))) {
-              console.log(`✅ [Gemini Vision] '${modelName}' Succeeded in ${durationMs}ms! Product: "${geminiJson.productGuess}", Ingredients: ${geminiJson.ingredients?.length || 0}`);
+              console.log(`✅ [Gemini Vision] '${modelName}' Succeeded in ${durationMs}ms! Product: "${geminiJson.productGuess}", FSSAI extracted: "${geminiJson.fssaiNumber}", Ingredients: ${geminiJson.ingredients?.length || 0}`);
               
               return res.json({
                 success: true,
@@ -272,7 +279,7 @@ You MUST strictly output valid JSON matching this structure:
  * Format Gemini Multimodal structured output into FoodVigil application model
  */
 function formatGeminiScanResult(geminiJson, imageHash, base64Raw) {
-  const { productGuess, ingredients = [] } = geminiJson;
+  const { productGuess, ingredients = [], fssaiNumber } = geminiJson;
 
   // Groupings
   const goodGroup = ingredients.filter(i => i.classification === 'good');
@@ -284,6 +291,28 @@ function formatGeminiScanResult(geminiJson, imageHash, base64Raw) {
   const detectedAdditives = ingredients
     .filter(i => i.insCode)
     .map(i => i.insCode.replace(/[^0-9a-zA-Z]/g, ''));
+
+  // REAL FSSAI 14-DIGIT FORMAT CHECK (Regex: ^[0-9]{14}$)
+  const rawFssaiDigits = (fssaiNumber || '').replace(/[^0-9]/g, '');
+  const isFssaiFormatValid = /^[0-9]{14}$/.test(rawFssaiDigits);
+
+  let fssaiStatus = 'Format Invalid';
+  let fssaiStatusLabel = 'No FSSAI Number Visible';
+  let fssaiBadgeClass = 'bg-slate-100 text-slate-700 border-slate-300';
+
+  if (rawFssaiDigits.length > 0) {
+    if (isFssaiFormatValid) {
+      fssaiStatus = 'Format Valid';
+      fssaiStatusLabel = 'Format Valid (14 Digits)';
+      fssaiBadgeClass = 'bg-emerald-50 text-emerald-800 border-emerald-300';
+    } else {
+      fssaiStatus = 'Format Invalid';
+      fssaiStatusLabel = `Format Invalid (${rawFssaiDigits.length} digits, 14 required)`;
+      fssaiBadgeClass = 'bg-rose-50 text-rose-800 border-rose-300';
+    }
+  }
+
+  const fssaiVerificationNote = 'Format-checked only — not confirmed against government database';
 
   // Determine overall status
   let status = 'good';
@@ -308,8 +337,16 @@ function formatGeminiScanResult(geminiJson, imageHash, base64Raw) {
     status,
     statusLabel,
     imageHash,
-    licenseNumber: '10014021001234',
-    fssaiStatus: 'Active & Verified',
+
+    // Real FSSAI Format Check Properties
+    licenseNumber: rawFssaiDigits || (fssaiNumber ? fssaiNumber.trim() : null),
+    fssaiNumber: rawFssaiDigits || (fssaiNumber ? fssaiNumber.trim() : null),
+    fssaiFormatValid: isFssaiFormatValid,
+    fssaiStatus: isFssaiFormatValid ? 'Format Valid' : 'Format Invalid',
+    fssaiStatusLabel,
+    fssaiNote: fssaiVerificationNote,
+    fssaiBadgeClass,
+
     manufacturerInfo: 'Extracted from physical label via Gemini Multimodal Vision',
     batchNumber: `LOT-${Math.floor(1000 + Math.random() * 9000)}`,
     expiryDate: 'Check packaging stamp',
@@ -349,6 +386,7 @@ function formatGeminiScanResult(geminiJson, imageHash, base64Raw) {
     observations: [
       `Gemini Multimodal Vision extracted ${ingredients.length} total ingredient declarations.`,
       goodGroup.length > 0 ? `Identified ${goodGroup.length} wholesome/beneficial ingredients (${goodGroup.slice(0, 2).map(g => g.name).join(', ')}).` : 'No primary whole food ingredients detected.',
+      rawFssaiDigits ? `FSSAI license number text extracted: ${rawFssaiDigits} (${isFssaiFormatValid ? '14-digit format valid' : 'format invalid'}).` : 'No FSSAI license number text was identified on packaging.',
       unclearGroup.length > 0 ? `Flagged ${unclearGroup.length} unclear/blurry text segment(s) on label.` : 'Label legibility was clear across all ingredients.'
     ],
 
@@ -356,7 +394,7 @@ function formatGeminiScanResult(geminiJson, imageHash, base64Raw) {
       ? harmfulGroup.map(h => `${h.name}${h.insCode ? ` (INS ${h.insCode})` : ''}: ${h.reason}`)
       : ['No high-risk chemical colorants or banned additives detected.'],
 
-    explanation: `Gemini Multimodal analysis completed. Formulation contains ${goodGroup.length} beneficial, ${neutralGroup.length} neutral, and ${harmfulGroup.length} flagged high-attention ingredient(s).`,
+    explanation: `Gemini Multimodal analysis completed. Formulation contains ${goodGroup.length} beneficial, ${neutralGroup.length} neutral, and ${harmfulGroup.length} flagged high-attention ingredient(s). FSSAI status is format-checked only.`,
     confidence: unclearGroup.length > 0 ? 82 : 98
   };
 
@@ -410,8 +448,12 @@ function formatTextOnlyScanResult(text) {
     };
   });
 
+  // Extract possible 14-digit number from text
+  const fssaiMatch = text.match(/\b([0-9]{14})\b/);
+
   return formatGeminiScanResult({
     productGuess: 'Manual Ingredient Formulation',
+    fssaiNumber: fssaiMatch ? fssaiMatch[1] : null,
     ingredients
   }, 'manual-text', null);
 }

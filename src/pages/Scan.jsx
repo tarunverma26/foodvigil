@@ -172,27 +172,27 @@ export default function Scan() {
 
       {/* Header */}
       <div className="text-center space-y-2 max-w-2xl mx-auto">
-        <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-semibold border border-emerald-200">
-          <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+        <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#EAF5EE] text-[#1F5D42] text-xs font-bold border border-[#BCE2CB]">
+          <Sparkles className="w-3.5 h-3.5 text-[#E68A35]" />
           <span>Gemini Multimodal Vision AI Engine</span>
         </div>
-        <h1 className="font-display font-extrabold text-3xl sm:text-4xl text-forest-900">
+        <h1 className="font-display font-extrabold text-3xl sm:text-4xl text-[#1F5D42]">
           AI Food Label Scanner
         </h1>
-        <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
+        <p className="text-[#64776B] text-xs sm:text-sm leading-relaxed">
           Upload any physical food packaging photo. Gemini Multimodal AI extracts the exact printed ingredient list, INS additives, and categorizes them into Good, Neutral, and Harmful groups.
         </p>
       </div>
 
       {/* Tabs Switcher */}
       <div className="flex justify-center">
-        <div className="inline-flex p-1 bg-slate-200/80 rounded-2xl border border-slate-300/80 shadow-soft-sm">
+        <div className="inline-flex p-1 bg-white rounded-2xl border border-[#E8DCB8] shadow-sm">
           <button
             onClick={() => { setActiveTab('upload'); setCameraActive(false); setErrorMessage(''); }}
             className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-2 ${
               activeTab === 'upload'
-                ? 'bg-white text-forest-900 shadow-soft-sm'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-[#1F5D42] text-white shadow-sm'
+                : 'text-[#19352A] hover:text-[#1F5D42] hover:bg-[#FFF9EF]'
             }`}
           >
             <Upload className="w-4 h-4" />
@@ -203,8 +203,8 @@ export default function Scan() {
             onClick={() => { setActiveTab('camera'); handleStartCamera(); }}
             className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-2 ${
               activeTab === 'camera'
-                ? 'bg-white text-forest-900 shadow-soft-sm'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-[#1F5D42] text-white shadow-sm'
+                : 'text-[#19352A] hover:text-[#1F5D42] hover:bg-[#FFF9EF]'
             }`}
           >
             <Camera className="w-4 h-4" />
@@ -215,8 +215,8 @@ export default function Scan() {
             onClick={() => { setActiveTab('manual'); setCameraActive(false); setErrorMessage(''); }}
             className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-2 ${
               activeTab === 'manual'
-                ? 'bg-white text-forest-900 shadow-soft-sm'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-[#1F5D42] text-white shadow-sm'
+                : 'text-[#19352A] hover:text-[#1F5D42] hover:bg-[#FFF9EF]'
             }`}
           >
             <FileText className="w-4 h-4" />
@@ -227,11 +227,11 @@ export default function Scan() {
             onClick={() => { setActiveTab('demo'); setCameraActive(false); setErrorMessage(''); }}
             className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-2 ${
               activeTab === 'demo'
-                ? 'bg-white text-forest-900 shadow-soft-sm'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-[#1F5D42] text-white shadow-sm'
+                : 'text-[#19352A] hover:text-[#1F5D42] hover:bg-[#FFF9EF]'
             }`}
           >
-            <Zap className="w-4 h-4 text-amber-500" />
+            <Zap className="w-4 h-4 text-[#E68A35]" />
             <span>Quick Demos</span>
           </button>
         </div>
@@ -239,12 +239,12 @@ export default function Scan() {
 
       {/* ERROR BANNER */}
       {errorMessage && (
-        <div className="p-4 bg-rose-50 border-2 border-rose-300 rounded-2xl flex items-start space-x-3 text-xs text-rose-900 animate-fadeIn">
-          <AlertOctagon className="w-5 h-5 text-rose-600 flex-shrink-0 mt-0.5" />
+        <div className="p-4 bg-[#FDF1F0] border-2 border-[#F5C2C0] rounded-2xl flex items-start space-x-3 text-xs text-[#B52F2B] animate-fadeIn">
+          <AlertOctagon className="w-5 h-5 text-[#D9534F] flex-shrink-0 mt-0.5" />
           <div className="space-y-1">
-            <h4 className="font-bold text-sm text-rose-950">Scan Analysis Notice</h4>
-            <p className="text-rose-800 leading-relaxed font-medium">{errorMessage}</p>
-            <p className="text-[11px] text-rose-700">
+            <h4 className="font-bold text-sm text-[#A82D29]">Scan Analysis Notice</h4>
+            <p className="text-[#B52F2B] leading-relaxed font-medium">{errorMessage}</p>
+            <p className="text-[11px] text-[#A82D29]">
               Tip: Ensure the packaging label is upright, well-lit, and the ingredients list text is in focus.
             </p>
           </div>
@@ -253,15 +253,15 @@ export default function Scan() {
 
       {/* ACTIVE PROCESSING STATE */}
       {isProcessing && (
-        <div className="card-surface p-8 text-center space-y-4 animate-fadeIn border-2 border-emerald-500/50">
-          <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 flex items-center justify-center mx-auto text-emerald-600">
-            <RefreshCw className="w-7 h-7 animate-spin text-emerald-600" />
+        <div className="card-surface p-8 text-center space-y-4 animate-fadeIn border-2 border-[#246B4A]">
+          <div className="w-14 h-14 rounded-2xl bg-[#EAF5EE] flex items-center justify-center mx-auto text-[#246B4A]">
+            <RefreshCw className="w-7 h-7 animate-spin text-[#246B4A]" />
           </div>
           <div className="space-y-1">
-            <h3 className="font-display font-extrabold text-lg text-forest-900">
+            <h3 className="font-display font-extrabold text-lg text-[#1F5D42]">
               Gemini Vision AI Engine Processing
             </h3>
-            <p className="text-xs text-slate-600 max-w-md mx-auto">{statusText}</p>
+            <p className="text-xs text-[#64776B] max-w-md mx-auto">{statusText}</p>
           </div>
         </div>
       )}
@@ -269,7 +269,7 @@ export default function Scan() {
       {/* TAB 1: UPLOAD PHOTO */}
       {!isProcessing && activeTab === 'upload' && (
         <div className="card-surface p-6 sm:p-10 space-y-6">
-          <div className="border-2 border-dashed border-slate-300 hover:border-emerald-500 rounded-3xl p-8 sm:p-12 text-center transition-all bg-slate-50/50 hover:bg-emerald-50/20 group">
+          <div className="border-2 border-dashed border-[#E8DCB8] hover:border-[#246B4A] rounded-3xl p-8 sm:p-12 text-center transition-all bg-[#FFF9EF]/50 hover:bg-[#EAF5EE]/40 group">
             <input
               type="file"
               accept="image/*"
@@ -278,14 +278,14 @@ export default function Scan() {
               className="hidden"
             />
             <label htmlFor="file-upload" className="cursor-pointer space-y-4 block">
-              <div className="w-16 h-16 rounded-2xl bg-forest-50 group-hover:bg-forest-100 flex items-center justify-center text-emerald-700 mx-auto transition-colors shadow-soft-sm">
-                <Upload className="w-8 h-8" />
+              <div className="w-16 h-16 rounded-2xl bg-[#EAF5EE] group-hover:bg-white flex items-center justify-center text-[#1F5D42] mx-auto transition-colors shadow-soft-sm border border-[#BCE2CB]">
+                <Upload className="w-8 h-8 text-[#246B4A]" />
               </div>
               <div className="space-y-1">
-                <h3 className="font-display font-bold text-base text-slate-800 group-hover:text-forest-900">
+                <h3 className="font-display font-bold text-base text-[#19352A] group-hover:text-[#1F5D42]">
                   Click to select food label photo
                 </h3>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-[#64776B]">
                   Auto-compressed & analyzed via Gemini Multimodal Vision API (JPG, PNG, WEBP)
                 </p>
               </div>
@@ -300,7 +300,7 @@ export default function Scan() {
       {/* TAB 2: LIVE CAMERA */}
       {!isProcessing && activeTab === 'camera' && (
         <div className="card-surface p-6 sm:p-8 space-y-6 text-center">
-          <div className="relative rounded-3xl overflow-hidden bg-slate-950 aspect-video max-w-xl mx-auto shadow-xl border border-slate-800">
+          <div className="relative rounded-3xl overflow-hidden bg-[#19352A] aspect-video max-w-xl mx-auto shadow-xl border border-[#E8DCB8]">
             <video
               ref={videoRef}
               autoPlay
@@ -308,13 +308,13 @@ export default function Scan() {
               muted
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 border-2 border-emerald-400/40 rounded-3xl pointer-events-none m-6 border-dashed animate-pulse" />
+            <div className="absolute inset-0 border-2 border-[#E68A35]/60 rounded-3xl pointer-events-none m-6 border-dashed animate-pulse" />
           </div>
 
           <div className="flex justify-center gap-3">
             <button
               onClick={handleCapturePhoto}
-              className="btn-forest py-3 px-8 text-xs font-bold uppercase tracking-wider shadow-lg flex items-center space-x-2"
+              className="btn-forest py-3 px-8 text-xs font-bold uppercase tracking-wider shadow-md flex items-center space-x-2"
             >
               <Camera className="w-4 h-4 text-emerald-300" />
               <span>Capture Label</span>
@@ -333,7 +333,7 @@ export default function Scan() {
       {!isProcessing && activeTab === 'manual' && (
         <form onSubmit={handleManualSubmit} className="card-surface p-6 sm:p-8 space-y-5">
           <div className="space-y-1.5">
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+            <label className="block text-xs font-bold uppercase tracking-wider text-[#19352A]">
               Product Title (Optional)
             </label>
             <input
@@ -341,12 +341,12 @@ export default function Scan() {
               value={productTitleInput}
               onChange={(e) => setProductTitleInput(e.target.value)}
               placeholder="e.g. Masala Instant Noodles or Mango Nectar"
-              className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-emerald-600"
+              className="w-full p-3 bg-[#FFF9EF] border border-[#E8DCB8] rounded-xl text-xs text-[#19352A] focus:outline-none focus:border-[#246B4A]"
             />
           </div>
 
           <div className="space-y-1.5">
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+            <label className="block text-xs font-bold uppercase tracking-wider text-[#19352A]">
               Declared Ingredients List
             </label>
             <textarea
@@ -354,7 +354,7 @@ export default function Scan() {
               value={manualText}
               onChange={(e) => setManualText(e.target.value)}
               placeholder="Paste or type ingredients list, e.g.: Refined Wheat Flour, Palm Oil, Iodised Salt, INS 621, INS 102, INS 211, INS 319, Spices..."
-              className="w-full p-3.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-sans focus:outline-none focus:border-emerald-600"
+              className="w-full p-3.5 bg-[#FFF9EF] border border-[#E8DCB8] rounded-xl text-xs text-[#19352A] font-sans focus:outline-none focus:border-[#246B4A]"
             />
           </div>
 
@@ -370,7 +370,7 @@ export default function Scan() {
       {/* TAB 4: QUICK DEMOS */}
       {!isProcessing && activeTab === 'demo' && (
         <div className="space-y-4">
-          <div className="text-center text-xs text-slate-500 font-semibold">
+          <div className="text-center text-xs text-[#64776B] font-semibold">
             Choose a verified FMCG packaging formulation to inspect:
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -378,22 +378,22 @@ export default function Scan() {
               <button
                 key={prod.id}
                 onClick={() => handleSelectPreset(prod)}
-                className="card-surface p-5 text-left hover:border-emerald-500 hover:shadow-soft-md transition-all group space-y-2"
+                className="card-surface p-5 text-left hover:border-[#246B4A] hover:shadow-md transition-all group space-y-2"
               >
                 <div className="flex items-center justify-between">
                   <span className="text-2xl">{prod.image}</span>
                   <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                    prod.status === 'urgent' ? 'bg-rose-100 text-rose-800' :
-                    prod.status === 'attention' ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'
+                    prod.status === 'urgent' ? 'badge-urgent' :
+                    prod.status === 'attention' ? 'badge-attention' : 'badge-good'
                   }`}>
                     {prod.statusLabel.split(' ')[0]}
                   </span>
                 </div>
-                <h4 className="font-bold text-xs text-slate-900 group-hover:text-forest-900">
+                <h4 className="font-bold text-xs text-[#19352A] group-hover:text-[#1F5D42]">
                   {prod.productName}
                 </h4>
-                <p className="text-[11px] text-slate-500">{prod.brand}</p>
-                <div className="text-[10px] font-mono text-emerald-700 font-semibold pt-1 border-t border-slate-100">
+                <p className="text-[11px] text-[#64776B]">{prod.brand}</p>
+                <div className="text-[10px] font-mono text-[#1F5D42] font-semibold pt-1 border-t border-[#E8DCB8]">
                   {prod.detectedAdditives.length} Additive(s) Flagged →
                 </div>
               </button>

@@ -104,13 +104,13 @@ export default function Verify() {
       {/* Header */}
       <div className="text-center space-y-2 max-w-2xl mx-auto">
         <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-semibold border border-emerald-200">
-          <SearchCheck className="w-3.5 h-3.5" />
+          <SearchCheck className="w-3.5 h-3.5 text-forest-800" />
           <span>Statutory 14-Digit FSSAI License Validator</span>
         </div>
         <h1 className="font-display font-extrabold text-3xl sm:text-4xl text-forest-900">
           Verify Food Business License
         </h1>
-        <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
+        <p className="text-brand-muted text-xs sm:text-sm leading-relaxed">
           Verify 14-digit FSSAI numbers, decode statutory state jurisdictions, check registered manufacturing premises, and inspect official surveillance ratings.
         </p>
       </div>
@@ -120,13 +120,13 @@ export default function Verify() {
         
         <form onSubmit={(e) => { e.preventDefault(); handleSearch(searchQuery); }} className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
-            <Search className="w-5 h-5 text-slate-400 absolute left-3.5 top-3.5 pointer-events-none" />
+            <Search className="w-5 h-5 text-brand-muted absolute left-3.5 top-3.5 pointer-events-none" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Enter 14-digit FSSAI number (e.g. 10014021001234) or brand name (e.g. Amul, Britannia, Nestle, Haldiram)"
-              className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-emerald-600 shadow-soft-sm font-sans"
+              className="w-full pl-11 pr-4 py-3 bg-white border border-brand-border rounded-xl text-xs sm:text-sm text-brand-text placeholder:text-brand-muted/70 focus:outline-none focus:border-forest-800 shadow-soft-sm font-sans"
             />
           </div>
 
@@ -141,23 +141,23 @@ export default function Verify() {
         </form>
 
         {/* Quick Demo Cases */}
-        <div className="pt-2 border-t border-slate-100 flex flex-wrap items-center gap-2 text-xs">
-          <span className="text-slate-500 font-semibold">Verified Brand Records:</span>
+        <div className="pt-2 border-t border-brand-border flex flex-wrap items-center gap-2 text-xs">
+          <span className="text-brand-muted font-semibold">Verified Brand Records:</span>
           {DEMO_FSSAI_REGISTRY.map((demo) => (
             <button
               key={demo.licenseNumber}
               onClick={() => handleSelectDemo(demo)}
-              className={`px-3 py-1.5 rounded-lg border text-xs font-semibold flex items-center space-x-1.5 transition-all ${
+              className={`px-3 py-1.5 rounded-lg border text-xs font-semibold flex items-center space-x-1.5 transition-all shadow-soft-sm ${
                 searchResult?.licenseNumber === demo.licenseNumber
-                  ? 'bg-forest-50 border-emerald-500 text-forest-900 font-bold'
-                  : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                  ? 'bg-forest-900 border-forest-900 text-white font-bold'
+                  : 'bg-white border-brand-border text-brand-text hover:bg-brand-bg'
               }`}
             >
               <span className={`w-2 h-2 rounded-full ${
                 demo.statusCode === 'active' ? 'bg-emerald-500' : demo.statusCode === 'suspended' ? 'bg-amber-500' : 'bg-rose-500'
               }`} />
               <span>{demo.brandName.split(' ')[0]}</span>
-              <span className="text-[10px] text-slate-400">({demo.status})</span>
+              <span className={`text-[10px] ${searchResult?.licenseNumber === demo.licenseNumber ? 'text-emerald-200' : 'text-brand-muted'}`}>({demo.status})</span>
             </button>
           ))}
         </div>
@@ -166,10 +166,10 @@ export default function Verify() {
 
       {/* Search Results Display */}
       {errorMessage && (
-        <div className="p-6 bg-white border border-slate-200 rounded-2xl text-center space-y-2">
+        <div className="p-6 bg-white border border-brand-border rounded-2xl text-center space-y-2 shadow-soft-sm">
           <AlertTriangle className="w-8 h-8 text-amber-500 mx-auto" />
-          <h4 className="font-bold text-sm text-slate-800">No Registry Record Found</h4>
-          <p className="text-xs text-slate-500 max-w-md mx-auto">{errorMessage}</p>
+          <h4 className="font-bold text-sm text-brand-text">No Registry Record Found</h4>
+          <p className="text-xs text-brand-muted max-w-md mx-auto">{errorMessage}</p>
         </div>
       )}
 
@@ -178,15 +178,15 @@ export default function Verify() {
           
           {/* STATUTORY 14-DIGIT ANATOMY DECODER */}
           {digitBreakdown && (
-            <div className="p-5 bg-forest-900 text-white rounded-2xl space-y-3 shadow-xl">
-              <div className="flex items-center justify-between pb-2 border-b border-emerald-700/60">
+            <div className="p-5 bg-forest-900 text-white rounded-2xl space-y-3 shadow-md border border-forest-800">
+              <div className="flex items-center justify-between pb-2 border-b border-forest-700/60">
                 <div className="flex items-center space-x-2">
-                  <Layers className="w-4 h-4 text-emerald-400" />
-                  <span className="font-bold text-xs uppercase tracking-wider text-emerald-300">
+                  <Layers className="w-4 h-4 text-brand-orange" />
+                  <span className="font-bold text-xs uppercase tracking-wider text-emerald-200">
                     Statutory 14-Digit FSSAI Structure Decoded
                   </span>
                 </div>
-                <span className="text-[11px] font-mono text-emerald-400">
+                <span className="text-[11px] font-mono text-brand-orange font-bold">
                   {searchResult.licenseNumber}
                 </span>
               </div>
@@ -194,46 +194,46 @@ export default function Verify() {
               <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-xs">
                 
                 {/* Digit 1: License Type */}
-                <div className="p-2.5 bg-slate-800/80 rounded-xl border border-slate-700 space-y-1">
+                <div className="p-2.5 bg-forest-950/60 rounded-xl border border-forest-800/80 space-y-1">
                   <div className="flex justify-between items-center">
-                    <span className="text-[10px] text-slate-400">Digit 1: Type</span>
-                    <span className="font-mono font-bold text-emerald-400">{digitBreakdown.typeCode}</span>
+                    <span className="text-[10px] text-emerald-300/80">Digit 1: Type</span>
+                    <span className="font-mono font-bold text-brand-orange">{digitBreakdown.typeCode}</span>
                   </div>
                   <div className="font-bold text-[11px] text-white leading-tight">{digitBreakdown.licenseType.split('(')[0]}</div>
                 </div>
 
                 {/* Digits 2-3: State */}
-                <div className="p-2.5 bg-slate-800/80 rounded-xl border border-slate-700 space-y-1">
+                <div className="p-2.5 bg-forest-950/60 rounded-xl border border-forest-800/80 space-y-1">
                   <div className="flex justify-between items-center">
-                    <span className="text-[10px] text-slate-400">Digits 2-3: State</span>
-                    <span className="font-mono font-bold text-emerald-400">{digitBreakdown.stateCode}</span>
+                    <span className="text-[10px] text-emerald-300/80">Digits 2-3: State</span>
+                    <span className="font-mono font-bold text-brand-orange">{digitBreakdown.stateCode}</span>
                   </div>
                   <div className="font-bold text-[11px] text-white leading-tight">{digitBreakdown.stateName}</div>
                 </div>
 
                 {/* Digits 4-5: Year */}
-                <div className="p-2.5 bg-slate-800/80 rounded-xl border border-slate-700 space-y-1">
+                <div className="p-2.5 bg-forest-950/60 rounded-xl border border-forest-800/80 space-y-1">
                   <div className="flex justify-between items-center">
-                    <span className="text-[10px] text-slate-400">Digits 4-5: Year</span>
-                    <span className="font-mono font-bold text-emerald-400">{digitBreakdown.yearCode}</span>
+                    <span className="text-[10px] text-emerald-300/80">Digits 4-5: Year</span>
+                    <span className="font-mono font-bold text-brand-orange">{digitBreakdown.yearCode}</span>
                   </div>
                   <div className="font-bold text-[11px] text-white leading-tight">Enrolled {digitBreakdown.regYear}</div>
                 </div>
 
                 {/* Digits 6-8: Section */}
-                <div className="p-2.5 bg-slate-800/80 rounded-xl border border-slate-700 space-y-1">
+                <div className="p-2.5 bg-forest-950/60 rounded-xl border border-forest-800/80 space-y-1">
                   <div className="flex justify-between items-center">
-                    <span className="text-[10px] text-slate-400">Digits 6-8: Section</span>
-                    <span className="font-mono font-bold text-emerald-400">{digitBreakdown.quantityCode}</span>
+                    <span className="text-[10px] text-emerald-300/80">Digits 6-8: Section</span>
+                    <span className="font-mono font-bold text-brand-orange">{digitBreakdown.quantityCode}</span>
                   </div>
                   <div className="font-bold text-[11px] text-white leading-tight">Industry Unit</div>
                 </div>
 
                 {/* Digits 9-14: FBO Serial */}
-                <div className="p-2.5 bg-slate-800/80 rounded-xl border border-slate-700 space-y-1 col-span-2 sm:col-span-1">
+                <div className="p-2.5 bg-forest-950/60 rounded-xl border border-forest-800/80 space-y-1 col-span-2 sm:col-span-1">
                   <div className="flex justify-between items-center">
-                    <span className="text-[10px] text-slate-400">Digits 9-14: Serial</span>
-                    <span className="font-mono font-bold text-emerald-400">{digitBreakdown.serialCode}</span>
+                    <span className="text-[10px] text-emerald-300/80">Digits 9-14: Serial</span>
+                    <span className="font-mono font-bold text-brand-orange">{digitBreakdown.serialCode}</span>
                   </div>
                   <div className="font-bold text-[11px] text-white leading-tight">Operator #{digitBreakdown.serialCode}</div>
                 </div>
@@ -246,15 +246,15 @@ export default function Verify() {
           <div className="card-surface p-6 sm:p-8 space-y-6">
             
             {/* Header: License & Live Status Badge */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-brand-border">
               <div>
                 <div className="flex items-center space-x-2">
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-500">14-Digit FSSAI License:</span>
-                  <span className="font-mono font-bold text-base text-forest-900 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                  <span className="text-xs font-bold uppercase tracking-wider text-brand-muted">14-Digit FSSAI License:</span>
+                  <span className="font-mono font-bold text-base text-forest-900 bg-brand-bg px-2 py-0.5 rounded border border-brand-border">
                     {searchResult.licenseNumber}
                   </span>
                   <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
-                    searchResult.isDemoData ? 'bg-amber-100 text-amber-900' : 'bg-emerald-100 text-emerald-900'
+                    searchResult.isDemoData ? 'bg-amber-100 text-amber-900 border border-amber-200' : 'bg-emerald-100 text-emerald-900 border border-emerald-200'
                   }`}>
                     {searchResult.isDemoData ? 'Simulated Register' : 'Verified Entity'}
                   </span>
@@ -263,8 +263,8 @@ export default function Verify() {
                 <h2 className="font-display font-extrabold text-xl sm:text-2xl text-forest-900 mt-2">
                   {searchResult.businessName}
                 </h2>
-                <p className="text-xs text-slate-600 font-medium">
-                  Trade Brand: <span className="font-bold text-slate-900">{searchResult.brandName}</span>
+                <p className="text-xs text-brand-muted font-medium">
+                  Trade Brand: <span className="font-bold text-brand-text">{searchResult.brandName}</span>
                 </p>
               </div>
 
@@ -294,45 +294,45 @@ export default function Verify() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               
               {/* Premises */}
-              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-1.5">
-                <div className="flex items-center space-x-2 text-xs font-bold text-slate-700">
-                  <MapPin className="w-4 h-4 text-emerald-700" />
+              <div className="p-4 bg-brand-bg/40 rounded-2xl border border-brand-border space-y-1.5">
+                <div className="flex items-center space-x-2 text-xs font-bold text-forest-900">
+                  <MapPin className="w-4 h-4 text-forest-800" />
                   <span>Registered Premises Address</span>
                 </div>
-                <p className="text-xs text-slate-700 leading-relaxed font-medium">
+                <p className="text-xs text-brand-text leading-relaxed font-medium">
                   {searchResult.premisesAddress}
                 </p>
-                <div className="text-[11px] text-slate-500 pt-2 border-t border-slate-200">
-                  <span className="font-bold text-slate-700">Category:</span> {searchResult.category}
+                <div className="text-[11px] text-brand-muted pt-2 border-t border-brand-border">
+                  <span className="font-bold text-brand-text">Category:</span> {searchResult.category}
                 </div>
               </div>
 
               {/* Validity */}
-              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-1.5 text-xs">
-                <div className="flex items-center space-x-2 text-xs font-bold text-slate-700">
-                  <Calendar className="w-4 h-4 text-emerald-700" />
+              <div className="p-4 bg-brand-bg/40 rounded-2xl border border-brand-border space-y-1.5 text-xs">
+                <div className="flex items-center space-x-2 text-xs font-bold text-forest-900">
+                  <Calendar className="w-4 h-4 text-forest-800" />
                   <span>Validity & Lifecycle</span>
                 </div>
                 <div className="space-y-1 pt-1">
                   <div className="flex justify-between">
-                    <span className="text-slate-500">Issue Date:</span>
-                    <span className="font-semibold text-slate-800">{searchResult.issueDate}</span>
+                    <span className="text-brand-muted">Issue Date:</span>
+                    <span className="font-semibold text-brand-text">{searchResult.issueDate}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-500">Valid Upto:</span>
+                    <span className="text-brand-muted">Valid Upto:</span>
                     <span className="font-bold text-forest-900">{searchResult.validUpto}</span>
                   </div>
-                  <div className="flex justify-between pt-2 border-t border-slate-200">
-                    <span className="text-slate-500">Last Surveillance Check:</span>
-                    <span className="font-medium text-slate-700">{searchResult.lastVerified}</span>
+                  <div className="flex justify-between pt-2 border-t border-brand-border">
+                    <span className="text-brand-muted">Last Surveillance Check:</span>
+                    <span className="font-medium text-brand-text">{searchResult.lastVerified}</span>
                   </div>
                 </div>
               </div>
 
               {/* Hygiene Rating */}
-              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-1.5">
-                <div className="flex items-center space-x-2 text-xs font-bold text-slate-700">
-                  <Star className="w-4 h-4 text-amber-500" />
+              <div className="p-4 bg-brand-bg/40 rounded-2xl border border-brand-border space-y-1.5">
+                <div className="flex items-center space-x-2 text-xs font-bold text-forest-900">
+                  <Star className="w-4 h-4 text-brand-orange" />
                   <span>Hygiene Audit & Rating</span>
                 </div>
                 
@@ -341,17 +341,17 @@ export default function Verify() {
                     <Star 
                       key={i} 
                       className={`w-4 h-4 ${
-                        i < searchResult.hygieneRating ? 'text-amber-500 fill-amber-500' : 'text-slate-300'
+                        i < searchResult.hygieneRating ? 'text-brand-orange fill-brand-orange' : 'text-slate-300'
                       }`} 
                     />
                   ))}
-                  <span className="text-xs font-bold text-slate-800 ml-1.5">
+                  <span className="text-xs font-bold text-brand-text ml-1.5">
                     {searchResult.hygieneRating} / 5 Stars
                   </span>
                 </div>
 
-                <div className="text-xs text-slate-600 pt-1">
-                  <span className="font-semibold text-slate-800">Inspection Grade:</span> {searchResult.inspectionGrade}
+                <div className="text-xs text-brand-muted pt-1">
+                  <span className="font-semibold text-brand-text">Inspection Grade:</span> {searchResult.inspectionGrade}
                 </div>
               </div>
 
@@ -365,9 +365,9 @@ export default function Verify() {
                   <span>Public Safety Notices on File ({searchResult.publicNotices.length})</span>
                 </div>
                 {searchResult.publicNotices.map((n, i) => (
-                  <div key={i} className="text-xs text-slate-700 space-y-0.5">
-                    <div className="font-bold text-slate-900">{n.title} ({n.date})</div>
-                    <p className="text-[11px] text-slate-600 leading-relaxed">{n.details}</p>
+                  <div key={i} className="text-xs text-brand-text space-y-0.5">
+                    <div className="font-bold text-brand-text">{n.title} ({n.date})</div>
+                    <p className="text-[11px] text-brand-muted leading-relaxed">{n.details}</p>
                   </div>
                 ))}
               </div>
@@ -375,7 +375,7 @@ export default function Verify() {
 
             {/* External Official Portal Button */}
             <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-              <span className="text-slate-500">
+              <span className="text-brand-muted">
                 To cross-verify on official government servers:
               </span>
               <a
@@ -385,7 +385,7 @@ export default function Verify() {
                 className="btn-secondary text-xs py-2 px-4"
               >
                 <span>Open FSSAI FOSCOS Portal</span>
-                <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
+                <ExternalLink className="w-3.5 h-3.5 text-brand-muted" />
               </a>
             </div>
 

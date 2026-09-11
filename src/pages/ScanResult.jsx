@@ -97,6 +97,19 @@ export default function ScanResult() {
     { name: 'Protein', value: scanData.nutrition?.protein || 6, unit: 'g', color: '#047857' },
   ];
 
+  // Real FSSAI 14-Digit Format Check (regex: ^[0-9]{14}$)
+  const rawFssaiNumber = scanData.fssaiNumber || scanData.licenseNumber || '';
+  const cleanFssaiDigits = rawFssaiNumber ? String(rawFssaiNumber).replace(/[^0-9]/g, '') : '';
+  const isFssaiFormatValid = /^[0-9]{14}$/.test(cleanFssaiDigits);
+  const hasFssaiNumber = cleanFssaiDigits.length > 0;
+  const fssaiStatus = scanData.fssaiStatus || (hasFssaiNumber 
+    ? (isFssaiFormatValid ? 'Format Valid' : 'Format Invalid')
+    : 'No FSSAI Number Visible');
+  const fssaiStatusLabel = scanData.fssaiStatusLabel || (hasFssaiNumber
+    ? (isFssaiFormatValid ? 'Format Valid (14 Digits)' : `Format Invalid (${cleanFssaiDigits.length} digits, 14 required)`)
+    : 'No FSSAI Number Visible on Pack');
+  const fssaiNote = scanData.fssaiNote || 'Format-checked only — not confirmed against government database';
+
   const handleCopy = () => {
     navigator.clipboard.writeText(window.location.href);
     setCopied(true);
@@ -107,27 +120,27 @@ export default function ScanResult() {
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       
       {/* Top Banner Navigation & Quick Actions */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-brand-border">
         <div className="space-y-1">
           <div className="flex items-center space-x-2">
-            <span className="text-xs font-semibold text-slate-500">Gemini 2.5 Vision Analysis</span>
-            <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+            <span className="text-xs font-semibold text-brand-muted">Gemini 2.5 Vision Analysis</span>
+            <ChevronRight className="w-3.5 h-3.5 text-brand-muted/60" />
             <span className="text-xs font-bold text-forest-900">{scanData.category || 'Packaged Food'}</span>
           </div>
-          <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-forest-900">
+          <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-brand-text">
             {scanData.productName || scanData.productGuess}
           </h1>
-          <p className="text-xs text-slate-600 font-medium">
-            AI Identification: <span className="font-bold text-slate-900">{scanData.productGuess || scanData.productName}</span>
+          <p className="text-xs text-brand-muted font-medium">
+            AI Identification: <span className="font-bold text-brand-text">{scanData.productGuess || scanData.productName}</span>
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
           <button
             onClick={() => setDeepAnalysisModalOpen(true)}
-            className="btn-forest py-2 px-3 text-xs font-bold flex items-center space-x-1.5 shadow-md bg-gradient-to-r from-forest-900 to-emerald-800"
+            className="btn-orange py-2 px-3.5 text-xs font-bold flex items-center space-x-1.5 shadow-sm"
           >
-            <Coins className="w-3.5 h-3.5 text-emerald-300" />
+            <Coins className="w-3.5 h-3.5 text-white" />
             <span>Unlock Deep AI ($0.005 USDC)</span>
           </button>
 
@@ -136,7 +149,7 @@ export default function ScanResult() {
             className="btn-secondary py-2 px-3 text-xs font-medium"
             title="Share Report"
           >
-            {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Share2 className="w-3.5 h-3.5 text-slate-600" />}
+            {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Share2 className="w-3.5 h-3.5 text-brand-muted" />}
             <span>{copied ? 'Copied' : 'Share'}</span>
           </button>
 
@@ -144,28 +157,28 @@ export default function ScanResult() {
             to="/scan"
             className="btn-secondary py-2 px-3 text-xs font-medium"
           >
-            <RotateCcw className="w-3.5 h-3.5 text-slate-600" />
+            <RotateCcw className="w-3.5 h-3.5 text-brand-muted" />
             <span>Scan Another</span>
           </Link>
         </div>
       </div>
 
       {/* PAID x402 PROMO BANNER */}
-      <div className="p-4 sm:p-5 bg-gradient-to-r from-forest-900 via-forest-800 to-emerald-900 text-white rounded-2xl shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4 border border-emerald-500/40">
+      <div className="p-4 sm:p-5 bg-gradient-to-r from-forest-900 via-forest-800 to-forest-900 text-white rounded-2xl shadow-md flex flex-col sm:flex-row items-center justify-between gap-4 border border-forest-700/50">
         <div className="flex items-center space-x-3.5">
-          <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center flex-shrink-0">
-            <Coins className="w-5 h-5 text-emerald-300" />
+          <div className="w-10 h-10 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center flex-shrink-0">
+            <Coins className="w-5 h-5 text-brand-orange" />
           </div>
           <div>
             <div className="flex items-center gap-2">
               <h3 className="font-display font-extrabold text-sm sm:text-base text-white">
                 x402 Pay-Per-Use Deep Toxicological AI
               </h3>
-              <span className="text-[10px] font-mono uppercase bg-emerald-400 text-forest-950 font-black px-1.5 py-0.2 rounded">
+              <span className="text-[10px] font-mono uppercase bg-brand-orange text-white font-black px-1.5 py-0.2 rounded">
                 $0.005 USDC
               </span>
             </div>
-            <p className="text-xs text-slate-300 mt-0.5">
+            <p className="text-xs text-white/80 mt-0.5">
               Instant on-chain micropayment on Algorand TestNet routed via GoPlausible facilitator.
             </p>
           </div>
@@ -173,7 +186,7 @@ export default function ScanResult() {
 
         <button
           onClick={() => setDeepAnalysisModalOpen(true)}
-          className="w-full sm:w-auto px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-forest-950 text-xs font-extrabold uppercase tracking-wider rounded-xl transition-all shadow-md flex items-center justify-center space-x-1.5 flex-shrink-0"
+          className="w-full sm:w-auto px-5 py-2.5 bg-brand-orange hover:bg-amber-600 text-white text-xs font-extrabold uppercase tracking-wider rounded-xl transition-all shadow-md flex items-center justify-center space-x-1.5 flex-shrink-0"
         >
           <Sparkles className="w-4 h-4" />
           <span>Demo HTTP 402 Flow</span>
@@ -185,8 +198,8 @@ export default function ScanResult() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
           
           {/* Status Badge */}
-          <div className="space-y-2 md:border-r border-slate-200 md:pr-6">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+          <div className="space-y-2 md:border-r border-brand-border md:pr-6">
+            <span className="text-xs font-bold uppercase tracking-wider text-brand-muted">
               Safety Assessment
             </span>
             <div className="flex items-center space-x-3">
@@ -198,28 +211,28 @@ export default function ScanResult() {
                 {scanData.statusLabel || 'Good Standing'}
               </span>
             </div>
-            <p className="text-xs text-slate-600 leading-relaxed">
+            <p className="text-xs text-brand-muted leading-relaxed">
               {scanData.explanation || 'Analyzed directly from physical packaging using Gemini 2.5 Multimodal Vision.'}
             </p>
           </div>
 
           {/* Quick Metrics */}
-          <div className="space-y-2 md:border-r border-slate-200 md:pr-6 md:pl-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+          <div className="space-y-2 md:border-r border-brand-border md:pr-6 md:pl-2">
+            <span className="text-xs font-bold uppercase tracking-wider text-brand-muted">
               Ingredients Classification
             </span>
             <div className="flex items-center space-x-2 text-xs font-bold">
               <span className="text-emerald-700 font-extrabold text-sm">{goodGroup.length} Good</span>
-              <span className="text-slate-400">•</span>
-              <span className="text-slate-600 font-extrabold text-sm">{neutralGroup.length} Neutral</span>
-              <span className="text-slate-400">•</span>
+              <span className="text-brand-muted/60">•</span>
+              <span className="text-brand-text font-extrabold text-sm">{neutralGroup.length} Neutral</span>
+              <span className="text-brand-muted/60">•</span>
               <span className="text-rose-700 font-extrabold text-sm">{harmfulGroup.length} Harmful</span>
             </div>
             <div className="flex flex-wrap gap-1.5 pt-1">
               {scanData.detectedAdditives?.map((code) => (
                 <span 
                   key={code}
-                  className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-semibold border border-slate-200"
+                  className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-50/80 text-brand-text font-semibold border border-amber-200/70"
                 >
                   INS {code}
                 </span>
@@ -229,22 +242,65 @@ export default function ScanResult() {
 
           {/* FSSAI Quick Status */}
           <div className="space-y-2 md:pl-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
-              Statutory License
-            </span>
-            <div className="flex items-center space-x-2">
-              <Building2 className="w-4 h-4 text-emerald-700" />
-              <span className="font-mono text-xs font-bold text-slate-900">
-                {scanData.licenseNumber || '10014021001234'}
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold uppercase tracking-wider text-brand-muted">
+                FSSAI License
+              </span>
+              <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                isFssaiFormatValid 
+                  ? 'bg-emerald-50 text-emerald-800 border-emerald-300' 
+                  : hasFssaiNumber 
+                  ? 'bg-rose-50 text-rose-800 border-rose-300' 
+                  : 'bg-brand-bg text-brand-muted border-brand-border'
+              }`}>
+                {isFssaiFormatValid ? (
+                  <>
+                    <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                    <span>Format Valid</span>
+                  </>
+                ) : hasFssaiNumber ? (
+                  <>
+                    <AlertOctagon className="w-3 h-3 text-rose-600" />
+                    <span>Format Invalid</span>
+                  </>
+                ) : (
+                  <>
+                    <HelpCircle className="w-3 h-3 text-brand-muted" />
+                    <span>Not Visible</span>
+                  </>
+                )}
               </span>
             </div>
-            <Link
-              to={`/verify?q=${scanData.licenseNumber || '10014021001234'}`}
-              className="text-xs font-bold text-emerald-700 hover:text-emerald-800 inline-flex items-center space-x-1"
-            >
-              <span>Verify State & Factory Record</span>
-              <ChevronRight className="w-3.5 h-3.5" />
-            </Link>
+
+            <div className="flex items-center space-x-2">
+              <Building2 className="w-4 h-4 text-forest-800 flex-shrink-0" />
+              <span className="font-mono text-xs font-bold text-brand-text truncate">
+                {hasFssaiNumber ? cleanFssaiDigits : 'No FSSAI Number Visible'}
+              </span>
+            </div>
+
+            <p className="text-[10px] text-brand-muted leading-tight">
+              {fssaiNote}
+            </p>
+
+            <div className="pt-1 flex items-center justify-between text-xs font-semibold">
+              <Link
+                to={`/verify?q=${cleanFssaiDigits || '10014021001234'}`}
+                className="text-forest-800 hover:text-forest-900 inline-flex items-center space-x-1 text-[11px] font-bold"
+              >
+                <span>Decode 14-Digits</span>
+                <ChevronRight className="w-3 h-3" />
+              </Link>
+              <a
+                href="https://foscos.fssai.gov.in"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-brand-muted hover:text-brand-text inline-flex items-center space-x-1 text-[11px]"
+              >
+                <span>FOSCOS Portal</span>
+                <ExternalLink className="w-2.5 h-2.5" />
+              </a>
+            </div>
           </div>
 
         </div>
@@ -253,7 +309,7 @@ export default function ScanResult() {
       {/* REQUIREMENT #5: STRUCTURED INGREDIENTS GROUPS SPLIT (Good, Neutral, Harmful, Unclear) */}
       <div className="space-y-4">
         <div className="flex items-center space-x-2">
-          <Layers className="w-5 h-5 text-emerald-700" />
+          <Layers className="w-5 h-5 text-forest-800" />
           <h2 className="font-display font-extrabold text-xl text-forest-900">
             Structured Ingredient Breakdown (Multimodal Classification)
           </h2>
@@ -274,7 +330,7 @@ export default function ScanResult() {
             </div>
 
             {harmfulGroup.length === 0 ? (
-              <p className="text-xs text-slate-500 py-3 italic text-center">
+              <p className="text-xs text-brand-muted py-3 italic text-center">
                 No high-risk chemical dyes or harmful additives flagged.
               </p>
             ) : (
@@ -309,15 +365,15 @@ export default function ScanResult() {
             </div>
 
             {goodGroup.length === 0 ? (
-              <p className="text-xs text-slate-500 py-3 italic text-center">
+              <p className="text-xs text-brand-muted py-3 italic text-center">
                 No primary whole food ingredients detected.
               </p>
             ) : (
               <div className="space-y-2.5 max-h-96 overflow-y-auto pr-1">
                 {goodGroup.map((item, idx) => (
                   <div key={idx} className="p-3 bg-white rounded-xl border border-emerald-200/80 shadow-soft-sm space-y-1">
-                    <span className="font-bold text-xs text-emerald-950 block">{item.name}</span>
-                    <p className="text-[11px] text-slate-600 leading-snug">{item.reason}</p>
+                    <span className="font-bold text-xs text-forest-900 block">{item.name}</span>
+                    <p className="text-[11px] text-brand-muted leading-snug">{item.reason}</p>
                   </div>
                 ))}
               </div>
@@ -325,34 +381,34 @@ export default function ScanResult() {
           </div>
 
           {/* GROUP 3: NEUTRAL / STANDARD CULINARY */}
-          <div className="p-5 bg-slate-50 border border-slate-200 rounded-3xl space-y-3">
-            <div className="flex items-center justify-between pb-2 border-b border-slate-200">
-              <div className="flex items-center space-x-2 text-slate-800 font-bold text-xs">
-                <Info className="w-4 h-4 text-slate-500" />
+          <div className="p-5 bg-white border border-brand-border rounded-3xl space-y-3 shadow-soft-sm">
+            <div className="flex items-center justify-between pb-2 border-b border-brand-border">
+              <div className="flex items-center space-x-2 text-brand-text font-bold text-xs">
+                <Info className="w-4 h-4 text-brand-muted" />
                 <span>Neutral Ingredients ({neutralGroup.length})</span>
               </div>
-              <span className="text-[10px] font-bold uppercase bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full">
+              <span className="text-[10px] font-bold uppercase bg-amber-50 text-amber-900 border border-amber-200/60 px-2 py-0.5 rounded-full">
                 Standard
               </span>
             </div>
 
             {neutralGroup.length === 0 ? (
-              <p className="text-xs text-slate-500 py-3 italic text-center">
+              <p className="text-xs text-brand-muted py-3 italic text-center">
                 No standard common ingredients listed.
               </p>
             ) : (
               <div className="space-y-2.5 max-h-96 overflow-y-auto pr-1">
                 {neutralGroup.map((item, idx) => (
-                  <div key={idx} className="p-3 bg-white rounded-xl border border-slate-200 shadow-soft-sm space-y-1">
+                  <div key={idx} className="p-3 bg-brand-bg/50 rounded-xl border border-brand-border/70 shadow-soft-sm space-y-1">
                     <div className="flex justify-between items-start">
-                      <span className="font-bold text-xs text-slate-900">{item.name}</span>
+                      <span className="font-bold text-xs text-brand-text">{item.name}</span>
                       {item.insCode && (
-                        <span className="text-[10px] font-mono font-bold bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded">
+                        <span className="text-[10px] font-mono font-bold bg-amber-100/70 text-amber-900 px-1.5 py-0.5 rounded">
                           INS {item.insCode}
                         </span>
                       )}
                     </div>
-                    <p className="text-[11px] text-slate-500 leading-snug">{item.reason}</p>
+                    <p className="text-[11px] text-brand-muted leading-snug">{item.reason}</p>
                   </div>
                 ))}
               </div>
@@ -392,7 +448,7 @@ export default function ScanResult() {
             <h3 className="font-display font-extrabold text-base text-forest-900">
               Nutritional Snapshot
             </h3>
-            <span className="text-[10px] text-slate-500 font-semibold">Per 100g</span>
+            <span className="text-[10px] text-brand-muted font-semibold">Per 100g</span>
           </div>
 
           <div className="h-52 w-full">
@@ -413,28 +469,28 @@ export default function ScanResult() {
             </ResponsiveContainer>
           </div>
 
-          <div className="space-y-1.5 pt-2 border-t border-slate-100 text-xs text-slate-600">
+          <div className="space-y-1.5 pt-2 border-t border-brand-border text-xs text-brand-muted">
             <div className="flex justify-between">
               <span>Energy:</span>
-              <strong className="text-slate-900">{scanData.nutrition?.calories || 480} kcal</strong>
+              <strong className="text-brand-text">{scanData.nutrition?.calories || 480} kcal</strong>
             </div>
             <div className="flex justify-between">
               <span>Sodium (Salt):</span>
-              <strong className="text-slate-900">{scanData.nutrition?.sodium || 780} mg</strong>
+              <strong className="text-brand-text">{scanData.nutrition?.sodium || 780} mg</strong>
             </div>
           </div>
         </div>
 
         {/* INS Additives Inspector */}
         <div className="card-surface p-6 lg:col-span-2 space-y-5">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+          <div className="flex items-center justify-between pb-3 border-b border-brand-border">
             <div className="flex items-center space-x-2">
-              <Layers className="w-4 h-4 text-emerald-700" />
+              <Layers className="w-4 h-4 text-forest-800" />
               <h3 className="font-display font-extrabold text-base text-forest-900">
                 Statutory Additive Matrix
               </h3>
             </div>
-            <span className="text-[10px] text-slate-400">Select additive to inspect</span>
+            <span className="text-[10px] text-brand-muted">Select additive to inspect</span>
           </div>
 
           {/* Additive Selector Buttons */}
@@ -454,8 +510,8 @@ export default function ScanResult() {
                 }}
                 className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center space-x-1.5 ${
                   selectedAdditive?.code?.includes(code)
-                    ? 'bg-forest-900 text-emerald-300 font-bold shadow-sm'
-                    : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                    ? 'bg-forest-900 text-amber-300 font-bold shadow-sm'
+                    : 'bg-brand-bg hover:bg-amber-100/50 text-brand-text border border-brand-border'
                 }`}
               >
                 <span>INS {code}</span>
@@ -465,10 +521,10 @@ export default function ScanResult() {
 
           {/* Selected Additive Details Card */}
           {selectedAdditive && (
-            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-4 text-xs animate-fadeIn">
+            <div className="p-4 bg-brand-bg/40 rounded-2xl border border-brand-border space-y-4 text-xs animate-fadeIn">
               <div className="flex justify-between items-start">
                 <div>
-                  <div className="text-[10px] font-mono text-emerald-700 font-bold uppercase">{selectedAdditive.code}</div>
+                  <div className="text-[10px] font-mono text-forest-800 font-bold uppercase">{selectedAdditive.code}</div>
                   <h4 className="font-bold text-sm text-forest-900">{selectedAdditive.name}</h4>
                 </div>
                 <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-200">
@@ -478,17 +534,17 @@ export default function ScanResult() {
 
               {/* Fact vs AI Breakdown */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div className="p-3 bg-white rounded-xl border border-slate-200 space-y-1">
-                  <div className="font-bold text-slate-800 text-[11px] flex items-center gap-1">
-                    <span className="text-emerald-700">●</span> Fact (Codex / FSSAI)
+                <div className="p-3 bg-white rounded-xl border border-brand-border space-y-1">
+                  <div className="font-bold text-brand-text text-[11px] flex items-center gap-1">
+                    <span className="text-forest-800">●</span> Fact (Codex / FSSAI)
                   </div>
-                  <p className="text-[11px] text-slate-600 leading-relaxed">{selectedAdditive.fact}</p>
+                  <p className="text-[11px] text-brand-muted leading-relaxed">{selectedAdditive.fact}</p>
                 </div>
-                <div className="p-3 bg-white rounded-xl border border-slate-200 space-y-1">
-                  <div className="font-bold text-slate-800 text-[11px] flex items-center gap-1">
-                    <span className="text-cyan-700">●</span> AI Consumer Guidance
+                <div className="p-3 bg-white rounded-xl border border-brand-border space-y-1">
+                  <div className="font-bold text-brand-text text-[11px] flex items-center gap-1">
+                    <span className="text-brand-orange">●</span> AI Consumer Guidance
                   </div>
-                  <p className="text-[11px] text-slate-600 leading-relaxed">{selectedAdditive.consumerNote}</p>
+                  <p className="text-[11px] text-brand-muted leading-relaxed">{selectedAdditive.consumerNote}</p>
                 </div>
               </div>
             </div>
@@ -496,7 +552,7 @@ export default function ScanResult() {
 
           {/* Grievance Link */}
           <div className="pt-2 flex items-center justify-between text-xs">
-            <span className="text-slate-500">Notice mislabeling or foreign matter?</span>
+            <span className="text-brand-muted">Notice mislabeling or foreign matter?</span>
             <Link
               to={`/report?product=${encodeURIComponent(scanData.productName || scanData.productGuess || '')}&batch=${encodeURIComponent(scanData.batchNumber || '')}`}
               className="font-bold text-rose-700 hover:text-rose-800 flex items-center gap-1"
@@ -508,6 +564,106 @@ export default function ScanResult() {
 
         </div>
 
+      </div>
+
+      {/* FSSAI STATUTORY LICENSE FORMAT & DISCLOSURE CARD */}
+      <div className="card-surface p-6 sm:p-7 space-y-4 border-l-4 border-l-forest-800">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-brand-border">
+          <div className="flex items-center space-x-2.5">
+            <div className="w-8 h-8 rounded-lg bg-emerald-50 border border-emerald-200 flex items-center justify-center text-forest-900">
+              <Building2 className="w-4 h-4" />
+            </div>
+            <div>
+              <h3 className="font-display font-bold text-sm sm:text-base text-forest-900">
+                FSSAI Statutory License Status
+              </h3>
+              <p className="text-[11px] text-brand-muted">
+                Extracted via Multimodal Vision AI & Validated against Statutory Format Standard
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${
+              isFssaiFormatValid 
+                ? 'bg-emerald-50 text-emerald-800 border-emerald-300' 
+                : hasFssaiNumber 
+                ? 'bg-rose-50 text-rose-800 border-rose-300' 
+                : 'bg-brand-bg text-brand-muted border-brand-border'
+            }`}>
+              {isFssaiFormatValid ? (
+                <>
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Format Valid (14 Digits)</span>
+                </>
+              ) : hasFssaiNumber ? (
+                <>
+                  <AlertOctagon className="w-3.5 h-3.5 text-rose-600" />
+                  <span>Format Invalid ({cleanFssaiDigits.length} digits, 14 required)</span>
+                </>
+              ) : (
+                <>
+                  <HelpCircle className="w-3.5 h-3.5 text-brand-muted" />
+                  <span>No FSSAI Number Visible</span>
+                </>
+              )}
+            </span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="p-3.5 bg-brand-bg/40 rounded-xl border border-brand-border space-y-1">
+            <span className="text-[10px] uppercase font-bold tracking-wider text-brand-muted">Extracted License Number</span>
+            <div className="font-mono text-sm font-bold text-brand-text">
+              {hasFssaiNumber ? cleanFssaiDigits : 'Not Visible on Packaging'}
+            </div>
+            <p className="text-[10px] text-brand-muted">Raw text extracted by Gemini Vision from physical label</p>
+          </div>
+
+          <div className="p-3.5 bg-brand-bg/40 rounded-xl border border-brand-border space-y-1">
+            <span className="text-[10px] uppercase font-bold tracking-wider text-brand-muted">Format Standard Check</span>
+            <div className={`font-mono text-sm font-bold ${isFssaiFormatValid ? 'text-forest-800' : 'text-rose-700'}`}>
+              {isFssaiFormatValid ? 'Regex Pass: ^[0-9]{14}$' : hasFssaiNumber ? `Regex Fail: ${cleanFssaiDigits.length}/14 digits` : 'No digits to test'}
+            </div>
+            <p className="text-[10px] text-brand-muted">Valid Indian FSSAI licenses must contain exactly 14 digits</p>
+          </div>
+
+          <div className="p-3.5 bg-brand-bg/40 rounded-xl border border-brand-border space-y-1 flex flex-col justify-between">
+            <div>
+              <span className="text-[10px] uppercase font-bold tracking-wider text-brand-muted">Official Actions</span>
+              <div className="flex flex-wrap gap-2 pt-1">
+                <Link
+                  to={`/verify?q=${cleanFssaiDigits || '10014021001234'}`}
+                  className="px-2.5 py-1 bg-white border border-brand-border rounded-lg text-xs font-bold text-forest-900 hover:bg-amber-50 transition-colors inline-flex items-center gap-1 shadow-soft-sm"
+                >
+                  <span>Decode Anatomy</span>
+                  <ChevronRight className="w-3 h-3" />
+                </Link>
+                <a
+                  href="https://foscos.fssai.gov.in"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-2.5 py-1 bg-white border border-brand-border rounded-lg text-xs font-bold text-brand-text hover:bg-brand-bg transition-colors inline-flex items-center gap-1 shadow-soft-sm"
+                >
+                  <span>FOSCOS Portal</span>
+                  <ExternalLink className="w-2.5 h-2.5" />
+                </a>
+              </div>
+            </div>
+            <p className="text-[10px] text-brand-muted">Cross-reference state code, enrollment year & license level</p>
+          </div>
+        </div>
+
+        {/* Consumer Statutory Disclosure Banner */}
+        <div className="p-3 bg-amber-50/80 border border-amber-200 rounded-xl flex items-start gap-2.5 text-amber-900 text-xs">
+          <Info className="w-4 h-4 text-amber-700 flex-shrink-0 mt-0.5" />
+          <div className="space-y-0.5">
+            <strong className="font-bold">Statutory Consumer Notice:</strong>
+            <p className="text-[11px] text-amber-800 leading-relaxed">
+              Format-checked only — not confirmed against government database. AI vision models extract printed text from packaging labels and verify structural adherence to the 14-digit FSSAI specification. Live active validity, manufacturing premises registration, and inspection histories must be verified directly on the official <a href="https://foscos.fssai.gov.in" target="_blank" rel="noopener noreferrer" className="underline font-bold hover:text-amber-950">FSSAI FOSCOS portal</a>.
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Deep Analysis Modal */}

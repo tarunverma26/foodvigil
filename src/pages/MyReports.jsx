@@ -113,20 +113,20 @@ export default function MyReports() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-semibold border border-emerald-200 mb-2">
-            <FileText className="w-3.5 h-3.5" />
+            <FileText className="w-3.5 h-3.5 text-forest-800" />
             <span>My Submitted Reports ({reports.length})</span>
           </div>
           <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-forest-900">
             Track Food Safety Reports
           </h1>
-          <p className="text-xs text-slate-600">
+          <p className="text-xs text-brand-muted">
             View active statuses, progress milestones, and download legal-grade complaint dossiers.
           </p>
         </div>
 
         <div className="flex items-center space-x-2">
           <Link to="/evidence" className="btn-secondary text-xs py-2 px-3.5">
-            <FolderLock className="w-4 h-4 text-slate-600" />
+            <FolderLock className="w-4 h-4 text-brand-muted" />
             <span>Evidence Vault</span>
           </Link>
           <Link to="/report" className="btn-forest text-xs py-2 px-3.5">
@@ -140,9 +140,9 @@ export default function MyReports() {
       <div className="space-y-4">
         {reports.length === 0 ? (
           <div className="card-surface p-12 text-center space-y-3">
-            <FileText className="w-10 h-10 text-slate-300 mx-auto" />
-            <h4 className="font-bold text-sm text-slate-800">No Reports Filed Yet</h4>
-            <p className="text-xs text-slate-500 max-w-sm mx-auto">
+            <FileText className="w-10 h-10 text-brand-muted/40 mx-auto" />
+            <h4 className="font-bold text-sm text-brand-text">No Reports Filed Yet</h4>
+            <p className="text-xs text-brand-muted max-w-sm mx-auto">
               If you have noticed suspicious food products, adulteration, or packaging tampering, use our guided reporter to log an incident.
             </p>
             <Link to="/report" className="btn-forest text-xs py-2 px-4 inline-flex">
@@ -154,17 +154,17 @@ export default function MyReports() {
             <div key={report.id} className="card-surface p-6 space-y-5">
               
               {/* Header: Tracking & Status */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-brand-border">
                 <div>
                   <div className="flex items-center space-x-2">
-                    <span className="font-mono font-bold text-xs text-forest-900 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                    <span className="font-mono font-bold text-xs text-forest-900 bg-brand-bg px-2 py-0.5 rounded border border-brand-border">
                       {report.trackingNumber}
                     </span>
-                    <span className="text-xs text-slate-400">•</span>
-                    <span className="text-xs text-slate-500">{report.dateSubmitted}</span>
+                    <span className="text-xs text-brand-muted/50">•</span>
+                    <span className="text-xs text-brand-muted">{report.dateSubmitted}</span>
                   </div>
-                  <h3 className="font-bold text-base text-slate-900 mt-1">{report.productName}</h3>
-                  <p className="text-xs text-slate-500">Brand: {report.brand} • Vendor: {report.storeName}</p>
+                  <h3 className="font-bold text-base text-brand-text mt-1">{report.productName}</h3>
+                  <p className="text-xs text-brand-muted">Brand: {report.brand} • Vendor: {report.storeName}</p>
                 </div>
 
                 <div className="flex items-center space-x-2">
@@ -177,17 +177,17 @@ export default function MyReports() {
                   <button
                     onClick={() => handleDownloadPDF(report)}
                     disabled={downloadingId === report.id}
-                    className="p-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 transition-colors"
+                    className="p-2 rounded-xl border border-brand-border hover:bg-brand-bg text-brand-text transition-colors shadow-soft-sm"
                     title="Download Official PDF Dossier"
                   >
-                    <Download className="w-4 h-4 text-forest-900" />
+                    <Download className="w-4 h-4 text-forest-800" />
                   </button>
                 </div>
               </div>
 
               {/* Progress Milestones Bar */}
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-2">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-brand-muted block mb-2">
                   Resolution Progress Timeline:
                 </span>
                 <div className="grid grid-cols-4 gap-2 text-center text-[10px]">
@@ -200,8 +200,8 @@ export default function MyReports() {
                     const isPassed = (report.statusStep || 2) >= s.step;
                     return (
                       <div key={s.step} className="space-y-1">
-                        <div className={`h-1.5 rounded-full ${isPassed ? 'bg-emerald-600' : 'bg-slate-200'}`} />
-                        <span className={`font-semibold ${isPassed ? 'text-forest-900' : 'text-slate-400'}`}>
+                        <div className={`h-1.5 rounded-full ${isPassed ? 'bg-forest-800' : 'bg-brand-border'}`} />
+                        <span className={`font-semibold ${isPassed ? 'text-forest-900' : 'text-brand-muted'}`}>
                           {s.label}
                         </span>
                       </div>
@@ -211,20 +211,20 @@ export default function MyReports() {
               </div>
 
               {/* Description Preview */}
-              <div className="p-3 bg-slate-50 rounded-xl text-xs text-slate-700 leading-relaxed font-mono text-[11px] border border-slate-100">
+              <div className="p-3 bg-brand-bg/40 rounded-xl text-xs text-brand-text leading-relaxed font-mono text-[11px] border border-brand-border">
                 {report.description}
               </div>
 
               {/* Footer actions */}
               <div className="flex items-center justify-between text-xs pt-1">
-                <span className="text-slate-500">
+                <span className="text-brand-muted">
                   📁 {report.evidenceCount || 2} evidence documents linked in Vault
                 </span>
                 <button
                   onClick={() => handleDownloadPDF(report)}
-                  className="text-emerald-800 font-bold hover:underline flex items-center gap-1"
+                  className="text-forest-800 font-bold hover:underline flex items-center gap-1"
                 >
-                  <Download className="w-3.5 h-3.5" />
+                  <Download className="w-3.5 h-3.5 text-forest-800" />
                   <span>Download Legal PDF Summary</span>
                 </button>
               </div>

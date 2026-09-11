@@ -24,27 +24,16 @@ function ScrollToTop() {
 }
 
 export default function App() {
-  const [isRainActive, setIsRainActive] = useState(true);
-  const [isLowPower, setIsLowPower] = useState(false);
-
   return (
     <Router>
-      <div className="relative min-h-screen flex flex-col bg-[#050811] text-slate-900 font-sans selection:bg-emerald-500 selection:text-white">
+      <div className="relative min-h-screen flex flex-col bg-[#FFF9EF] text-[#19352A] font-sans selection:bg-[#246B4A] selection:text-white">
         <ScrollToTop />
 
-        {/* Layered 5-Depth 3D Night-Market Parallax Scene */}
-        <NightMarketParallax 
-          isRainActive={isRainActive} 
-          isLowPower={isLowPower} 
-        />
+        {/* Subtle Warm Food Safety Background Motif */}
+        <NightMarketParallax />
 
-        {/* Sticky Header with Ambient Toggles */}
-        <Navbar 
-          isRainActive={isRainActive}
-          setIsRainActive={setIsRainActive}
-          isLowPower={isLowPower}
-          setIsLowPower={setIsLowPower}
-        />
+        {/* Sticky Header with FOOD VIGIL Branding, Single Scan Tab & Working Login */}
+        <Navbar />
 
         {/* Dynamic Main Content Container */}
         <main className="relative z-10 flex-1">
