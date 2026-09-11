@@ -44,15 +44,20 @@ async function fetchWithFallback(path, options) {
   const isBrowser = typeof window !== 'undefined';
   const hostname = isBrowser ? window.location.hostname : 'localhost';
 
+  const normalizedPath = path.startsWith('/') ? path : `/api/${path}`;
+  const v1Path = normalizedPath.startsWith('/api/v1/') ? normalizedPath : normalizedPath.replace(/^\/api\//, '/api/v1/');
+
   const candidateUrls = [
-    // 1. Relative path (Vite proxy)
-    path.startsWith('/') ? path : `/api/v1/${path}`,
-    // 2. Direct LAN / Host IP on port 5000
-    isBrowser && hostname ? `http://${hostname}:5000${path.startsWith('/') ? path : '/api/v1/' + path}` : null,
-    // 3. Direct Loopback IPv4
-    `http://127.0.0.1:5000${path.startsWith('/') ? path : '/api/v1/' + path}`,
-    // 4. Direct localhost
-    `http://localhost:5000${path.startsWith('/') ? path : '/api/v1/' + path}`
+    // 1. Primary relative serverless route (Vercel / Vite proxy)
+    normalizedPath,
+    // 2. V1 Alias relative route
+    v1Path,
+    // 3. Direct LAN / Host IP on port 5000 (if Express dev server running)
+    isBrowser && hostname && hostname !== 'localhost' && !hostname.endsWith('.vercel.app') ? `http://${hostname}:5000${v1Path}` : null,
+    // 4. Direct Loopback IPv4
+    isBrowser && !window.location.hostname.endsWith('.vercel.app') ? `http://127.0.0.1:5000${v1Path}` : null,
+    // 5. Direct localhost
+    isBrowser && !window.location.hostname.endsWith('.vercel.app') ? `http://localhost:5000${v1Path}` : null
   ].filter(Boolean);
 
   const uniqueUrls = [...new Set(candidateUrls)];
@@ -61,7 +66,7 @@ async function fetchWithFallback(path, options) {
   for (const url of uniqueUrls) {
     try {
       const response = await fetch(url, options);
-      // If 404 or connection issue, try next candidate
+      // If 404 or not found, try next candidate
       if (response.status === 404) {
         continue;
       }
@@ -72,7 +77,7 @@ async function fetchWithFallback(path, options) {
   }
 
   // If all failed, throw the last error
-  throw lastError || new Error('Unable to connect to backend server');
+  throw lastError || new Error('Unable to connect to backend API / serverless functions');
 }
 
 export const apiService = {

@@ -10,6 +10,7 @@
     "server:x402": "cd x402-server && npm start"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "@x402-avm/extensions": "^2.6.1",
     "@x402/avm": "^2.25.0",
     "@x402/core": "^2.25.0",
@@ -17,8 +18,10 @@
     "algosdk": "^3.7.0",
     "canvas-confetti": "^1.9.4",
     "clsx": "^2.1.1",
+    "dotenv": "^16.4.7",
     "jspdf": "^2.5.2",
     "lucide-react": "^0.475.0",
+    "pg": "^8.23.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.29.0",
