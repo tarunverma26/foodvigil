@@ -78,7 +78,7 @@ app.use((err, req, res, next) => {
   res.status(500).json({ success: false, error: err.message || 'Internal Server Error' });
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`=======================================================`);
   console.log(`🛡️  FoodVigil Production Backend API Running!`);
   console.log(`🌐  Local URL: http://localhost:${PORT}`);

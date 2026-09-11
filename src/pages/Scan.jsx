@@ -171,7 +171,7 @@ export default function Scan() {
       <canvas ref={canvasRef} className="hidden" />
 
       {/* Header */}
-      <div className="text-center space-y-2 max-w-2xl mx-auto">
+      <div className="text-center space-y-3 max-w-2xl mx-auto p-6 sm:p-8 rounded-3xl bg-white/95 backdrop-blur-md border border-[#E8DCB8] shadow-sm">
         <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#EAF5EE] text-[#1F5D42] text-xs font-bold border border-[#BCE2CB]">
           <Sparkles className="w-3.5 h-3.5 text-[#E68A35]" />
           <span>Gemini Multimodal Vision AI Engine</span>
@@ -179,7 +179,7 @@ export default function Scan() {
         <h1 className="font-display font-extrabold text-3xl sm:text-4xl text-[#1F5D42]">
           AI Food Label Scanner
         </h1>
-        <p className="text-[#64776B] text-xs sm:text-sm leading-relaxed">
+        <p className="text-[#19352A] text-xs sm:text-sm leading-relaxed font-medium">
           Upload any physical food packaging photo. Gemini Multimodal AI extracts the exact printed ingredient list, INS additives, and categorizes them into Good, Neutral, and Harmful groups.
         </p>
       </div>

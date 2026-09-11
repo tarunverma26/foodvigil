@@ -8,7 +8,15 @@ import {
   INITIAL_EVIDENCE_ITEMS 
 } from '../data/foodvigilData';
 
-const BACKEND_API_BASE = 'http://localhost:5000/api/v1';
+const getBackendApiBase = () => {
+  if (typeof window !== 'undefined') {
+    // Relative path leverages Vite dev server proxy or same-origin production backend
+    return '/api/v1';
+  }
+  return 'http://127.0.0.1:5000/api/v1';
+};
+
+const BACKEND_API_BASE = getBackendApiBase();
 
 // Storage keys for local persistence
 const STORAGE_REPORTS_KEY = 'foodvigil_user_reports';
