@@ -34,10 +34,13 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Health check
 app.get('/api/health', (req, res) => {
+  const geminiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
   res.json({
     status: 'healthy',
     service: 'FoodVigil Production API',
     database: 'SQLite Connected',
+    geminiConfigured: Boolean(geminiKey),
+    geminiKeyPreview: geminiKey ? `${geminiKey.substring(0, 6)}...${geminiKey.slice(-4)}` : 'Not Configured',
     timestamp: new Date().toISOString()
   });
 });
