@@ -76,11 +76,19 @@ export const apiService = {
       }
 
       // Explicit error handling from backend
-      if (json && json.error) {
-        console.error('❌ Backend returned scan error:', json.error);
+      if (json && (json.error || json.message)) {
+        console.error('❌ Backend returned scan error:', json.error || json.message);
         return { 
           success: false, 
-          error: json.error,
+          error: json.error || json.message,
+          isExplicitError: true
+        };
+      }
+
+      if (!response.ok) {
+        return {
+          success: false,
+          error: `Backend server error (${response.status}: ${response.statusText}). Please check server logs and retry.`,
           isExplicitError: true
         };
       }
@@ -94,6 +102,11 @@ export const apiService = {
         };
       }
       console.error('❌ Backend connection network error:', networkErr);
+      return {
+        success: false,
+        error: `Unable to connect to the backend server at ${BACKEND_API_BASE}. Please ensure the backend API server is running on port 5000.`,
+        isExplicitError: true
+      };
     }
 
     // If text was manually provided, process text

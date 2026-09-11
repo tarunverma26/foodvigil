@@ -115,12 +115,12 @@ export default function Navbar() {
             </nav>
 
             {/* Right Action Controls: Wallet & Working Login (Desktop) */}
-            <div className="hidden xl:flex items-center space-x-2 2xl:space-x-2.5 flex-shrink-0">
+            <div className="hidden xl:flex items-center space-x-2 flex-shrink-0">
               
-              {/* CONNECT WALLET (x402 Micropayments) */}
+              {/* CONNECT WALLET (x402 Micropayments) - Compact */}
               <button
                 onClick={() => setWalletModalOpen(true)}
-                className={`flex items-center space-x-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all border whitespace-nowrap ${
+                className={`flex items-center space-x-1 px-2.5 py-1.5 rounded-lg text-[11px] font-bold transition-all border whitespace-nowrap ${
                   currentWallet
                     ? 'bg-[#EAF5EE] border-[#BCE2CB] text-[#1F5D42] shadow-sm'
                     : 'bg-white hover:bg-[#FAF0DE] text-[#E68A35] border-[#E8DCB8] shadow-sm hover:border-[#E68A35]'
@@ -131,20 +131,20 @@ export default function Navbar() {
                 <span>
                   {currentWallet 
                     ? `${currentWallet.balanceUSDC} USDC` 
-                    : 'Connect Wallet'}
+                    : 'Wallet'}
                 </span>
               </button>
 
-              {/* USER AUTHENTICATION / LOGIN OPTION */}
+              {/* USER AUTHENTICATION / LOGIN OPTION (Icon-Only) */}
               {currentUser ? (
                 <div className="relative">
                   <button
                     onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                    className="flex items-center space-x-2 px-3 py-1.5 bg-white hover:bg-[#FAF0DE] border border-[#E8DCB8] rounded-xl text-xs font-bold text-[#1F5D42] shadow-sm transition-all whitespace-nowrap"
+                    className="p-1.5 bg-white hover:bg-[#FAF0DE] border border-[#E8DCB8] rounded-lg shadow-sm transition-all flex items-center justify-center"
+                    title={`Logged in as ${currentUser.name}`}
+                    aria-label="User profile"
                   >
-                    <span className="text-base">{currentUser.avatar || '👨‍🔬'}</span>
-                    <span className="max-w-[100px] 2xl:max-w-[120px] truncate">{currentUser.name.split(' ')[0]}</span>
-                    <ChevronDown className="w-3.5 h-3.5 text-[#64776B] flex-shrink-0" />
+                    <span className="text-base leading-none">{currentUser.avatar || '👨‍🔬'}</span>
                   </button>
 
                   {/* User Profile Dropdown Menu */}
@@ -198,51 +198,52 @@ export default function Navbar() {
               ) : (
                 <button
                   onClick={() => setLoginModalOpen(true)}
-                  className="btn-forest text-xs py-2 px-4 shadow-sm font-bold whitespace-nowrap flex-shrink-0 flex items-center space-x-1.5"
+                  className="p-2 bg-[#246B4A] hover:bg-[#1F5D42] text-white rounded-lg shadow-sm transition-colors flex items-center justify-center flex-shrink-0"
+                  title="Sign In"
+                  aria-label="Sign In"
                 >
-                  <User className="w-3.5 h-3.5 flex-shrink-0" />
-                  <span>Sign In</span>
+                  <User className="w-3.5 h-3.5" />
                 </button>
               )}
 
             </div>
 
             {/* Mobile & Tablet Action Controls (< xl: 1280px) */}
-            <div className="flex items-center space-x-2 xl:hidden flex-shrink-0">
+            <div className="flex items-center space-x-1.5 xl:hidden flex-shrink-0">
               <button
                 onClick={() => setWalletModalOpen(true)}
-                className="flex items-center space-x-1 px-2.5 py-1.5 rounded-xl bg-white border border-[#E8DCB8] text-[#E68A35] text-xs font-bold shadow-sm"
+                className="p-1.5 sm:px-2 sm:py-1.5 rounded-lg bg-white border border-[#E8DCB8] text-[#E68A35] text-[11px] font-bold shadow-sm flex items-center gap-1"
                 title="Connect Wallet"
               >
-                <Wallet className="w-4 h-4 flex-shrink-0" />
-                <span className="hidden sm:inline">{currentWallet ? `${currentWallet.balanceUSDC} USDC` : 'Wallet'}</span>
+                <Wallet className="w-3.5 h-3.5 flex-shrink-0" />
+                <span className="hidden sm:inline">{currentWallet ? `${currentWallet.balanceUSDC}` : 'Wallet'}</span>
               </button>
 
               {currentUser ? (
                 <button
                   onClick={() => setLoginModalOpen(true)}
-                  className="flex items-center space-x-1.5 p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-white border border-[#E8DCB8] text-xs font-bold text-[#1F5D42] shadow-sm"
+                  className="p-1.5 rounded-lg bg-white border border-[#E8DCB8] shadow-sm flex items-center justify-center"
+                  title={currentUser.name}
                 >
-                  <span className="text-sm">{currentUser.avatar || '👨‍🔬'}</span>
-                  <span className="hidden sm:inline max-w-[80px] truncate">{currentUser.name.split(' ')[0]}</span>
+                  <span className="text-sm leading-none">{currentUser.avatar || '👨‍🔬'}</span>
                 </button>
               ) : (
                 <button
                   onClick={() => setLoginModalOpen(true)}
-                  className="btn-forest text-xs py-1.5 px-3 shadow-sm font-bold flex items-center space-x-1.5"
+                  className="p-2 rounded-lg bg-[#246B4A] text-white shadow-sm flex items-center justify-center"
                   title="Sign In"
+                  aria-label="Sign In"
                 >
-                  <User className="w-3.5 h-3.5 flex-shrink-0" />
-                  <span className="inline">Sign In</span>
+                  <User className="w-3.5 h-3.5" />
                 </button>
               )}
 
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="p-2 rounded-xl bg-white border border-[#E8DCB8] text-[#19352A] hover:bg-[#FAF0DE] shadow-sm flex items-center justify-center"
+                className="p-2 rounded-lg bg-white border border-[#E8DCB8] text-[#19352A] hover:bg-[#FAF0DE] shadow-sm flex items-center justify-center"
                 aria-label="Toggle navigation menu"
               >
-                {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
               </button>
             </div>
 

@@ -56,10 +56,13 @@ export default function Home() {
               </span>
             </h1>
 
-            {/* Subheading */}
-            <p className="text-[#64776B] text-base sm:text-lg max-w-xl leading-relaxed">
-              Understand what you eat. Verify what you buy. Detect adulteration signs. Take evidence-backed action when something isn't right.
-            </p>
+            {/* Subheading with targeted soft legible gradient backdrop */}
+            <div className="relative inline-block max-w-xl">
+              <div className="absolute -inset-2.5 sm:-inset-3 rounded-2xl bg-gradient-to-r from-[#FFF9EF]/95 via-[#FFFFFF]/90 to-[#FFF9EF]/80 backdrop-blur-[2px] border border-[#E8DCB8]/60 shadow-sm pointer-events-none -z-0" />
+              <p className="relative z-10 text-[#19352A] font-medium text-base sm:text-lg leading-relaxed">
+                Understand what you eat. Verify what you buy. Detect adulteration signs. Take evidence-backed action when something isn't right.
+              </p>
+            </div>
 
             {/* CTAs */}
             <div className="flex flex-wrap items-center gap-3.5 pt-2">
