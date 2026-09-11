@@ -40,6 +40,41 @@ const setStoredData = (key, value) => {
   }
 };
 
+async function fetchWithFallback(path, options) {
+  const isBrowser = typeof window !== 'undefined';
+  const hostname = isBrowser ? window.location.hostname : 'localhost';
+
+  const candidateUrls = [
+    // 1. Relative path (Vite proxy)
+    path.startsWith('/') ? path : `/api/v1/${path}`,
+    // 2. Direct LAN / Host IP on port 5000
+    isBrowser && hostname ? `http://${hostname}:5000${path.startsWith('/') ? path : '/api/v1/' + path}` : null,
+    // 3. Direct Loopback IPv4
+    `http://127.0.0.1:5000${path.startsWith('/') ? path : '/api/v1/' + path}`,
+    // 4. Direct localhost
+    `http://localhost:5000${path.startsWith('/') ? path : '/api/v1/' + path}`
+  ].filter(Boolean);
+
+  const uniqueUrls = [...new Set(candidateUrls)];
+
+  let lastError = null;
+  for (const url of uniqueUrls) {
+    try {
+      const response = await fetch(url, options);
+      // If 404 or connection issue, try next candidate
+      if (response.status === 404) {
+        continue;
+      }
+      return response;
+    } catch (err) {
+      lastError = err;
+    }
+  }
+
+  // If all failed, throw the last error
+  throw lastError || new Error('Unable to connect to backend server');
+}
+
 export const apiService = {
   // 1. Multimodal Gemini Scan & Direct Label Analysis
   async analyzeLabel({ text, presetId, imagePreview, productName }) {
@@ -55,12 +90,11 @@ export const apiService = {
     // 2. Direct Backend Call (Gemini Multimodal Vision API)
     try {
       const controller = new AbortController();
-      // Increased timeout to 90 seconds (90,000ms) to comfortably allow Gemini Multimodal Vision inference
       const timeoutId = setTimeout(() => controller.abort(), 90000);
 
-      console.log(`🚀 Dispatching image analysis to ${BACKEND_API_BASE}/scan (Timeout: 90s)...`);
+      console.log(`🚀 Dispatching image analysis to backend with multi-origin fallback...`);
 
-      const response = await fetch(`${BACKEND_API_BASE}/scan`, {
+      const response = await fetchWithFallback('/api/v1/scan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
@@ -112,7 +146,7 @@ export const apiService = {
       console.error('❌ Backend connection network error:', networkErr);
       return {
         success: false,
-        error: `Unable to connect to the backend server at ${BACKEND_API_BASE}. Please ensure the backend API server is running on port 5000.`,
+        error: `Unable to connect to the backend server. Please ensure the backend API server is running on port 5000.`,
         isExplicitError: true
       };
     }
@@ -208,7 +242,7 @@ export const apiService = {
   // 2. FSSAI & Business Verification
   async verifyBusiness(query) {
     try {
-      const response = await fetch(`${BACKEND_API_BASE}/business/verify?query=${encodeURIComponent(query)}`);
+      const response = await fetchWithFallback(`/api/v1/business/verify?query=${encodeURIComponent(query)}`);
       if (response.ok) {
         const json = await response.json();
         if (json.success && json.data) {
@@ -266,7 +300,7 @@ export const apiService = {
   async getAlerts(filters = {}) {
     try {
       const params = new URLSearchParams(filters);
-      const response = await fetch(`${BACKEND_API_BASE}/alerts?${params.toString()}`);
+      const response = await fetchWithFallback(`/api/v1/alerts?${params.toString()}`);
       if (response.ok) {
         const json = await response.json();
         if (json.success && json.data) {
@@ -305,7 +339,7 @@ export const apiService = {
   // 5. Reports Management
   async submitReport(reportData) {
     try {
-      const response = await fetch(`${BACKEND_API_BASE}/reports`, {
+      const response = await fetchWithFallback('/api/v1/reports', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(reportData)

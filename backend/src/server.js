@@ -45,27 +45,27 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// 1. AI Scan & OCR Endpoints
-app.post('/api/v1/scan', scanController.analyzeLabel);
-app.post('/api/v1/analyze-label', scanController.analyzeLabel);
-app.get('/api/v1/products/recent', scanController.getRecentScans);
+// 1. AI Scan & OCR Endpoints (Supporting both /api/v1, /api, and direct routes)
+app.post(['/api/v1/scan', '/api/scan', '/scan'], scanController.analyzeLabel);
+app.post(['/api/v1/analyze-label', '/api/analyze-label', '/analyze-label'], scanController.analyzeLabel);
+app.get(['/api/v1/products/recent', '/api/products/recent', '/products/recent'], scanController.getRecentScans);
 
 // 2. FSSAI Business Verification Endpoint
-app.get('/api/v1/business/verify', businessController.verifyBusiness);
+app.get(['/api/v1/business/verify', '/api/business/verify', '/business/verify'], businessController.verifyBusiness);
 
 // 3. Safety Alerts & Recalls Endpoint
-app.get('/api/v1/alerts', alertsController.getAlerts);
+app.get(['/api/v1/alerts', '/api/alerts', '/alerts'], alertsController.getAlerts);
 
 // 4. Consumer Reports Endpoints
-app.post('/api/v1/reports', reportsController.createReport);
-app.get('/api/v1/reports', reportsController.getReports);
+app.post(['/api/v1/reports', '/api/reports', '/reports'], reportsController.createReport);
+app.get(['/api/v1/reports', '/api/reports', '/reports'], reportsController.getReports);
 
 // 5. Evidence Vault Endpoints
-app.get('/api/v1/evidence', evidenceController.getEvidence);
-app.post('/api/v1/evidence', evidenceController.uploadEvidence);
+app.get(['/api/v1/evidence', '/api/evidence', '/evidence'], evidenceController.getEvidence);
+app.post(['/api/v1/evidence', '/api/evidence', '/evidence'], evidenceController.uploadEvidence);
 
 // 6. User Dashboard Metrics Endpoint
-app.get('/api/v1/user/dashboard', dashboardController.getDashboard);
+app.get(['/api/v1/user/dashboard', '/api/user/dashboard', '/user/dashboard'], dashboardController.getDashboard);
 
 // 404 handler
 app.use((req, res) => {
