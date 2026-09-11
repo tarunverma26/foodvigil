@@ -30,6 +30,7 @@ export const scanController = {
   // POST /api/v1/scan & POST /api/v1/analyze-label
   async analyzeLabel(req, res) {
     const requestTimestamp = new Date().toISOString();
+    const startTime = Date.now();
 
     try {
       const { imageBase64, text, presetId, imageHash: clientImageHash } = req.body;
@@ -54,6 +55,7 @@ export const scanController = {
           });
         }
         serverImageHash = computeImageHash(parsedImage.data);
+        console.log(`\n📸 Received Image Scan Request: Size = ${Math.round(parsedImage.data.length / 1024)} KB, Mime = ${parsedImage.mimeType}, Hash = ${serverImageHash}`);
       }
 
       // 2. GEMINI MULTIMODAL DIRECT INVOCATION
@@ -70,8 +72,7 @@ export const scanController = {
           'gemini-3.7-flash',
           'gemini-flash-latest',
           'gemini-2.5-flash-lite',
-          'gemini-3.1-flash-lite',
-          'gemini-2.5-flash'
+          'gemini-3.1-flash-lite'
         ];
 
         const promptText = `
@@ -146,8 +147,10 @@ You MUST strictly output valid JSON matching this structure:
         let lastGeminiError = null;
 
         for (const modelName of candidateModels) {
+          const modelStartTime = Date.now();
           try {
-            console.log(`Calling Gemini Multimodal Vision API (${modelName}) for image hash ${serverImageHash}...`);
+            console.log(`⚡ [Gemini Vision] Invoking model '${modelName}' for image hash ${serverImageHash}...`);
+            
             const model = genAI.getGenerativeModel({
               model: modelName,
               generationConfig: {
@@ -168,25 +171,33 @@ You MUST strictly output valid JSON matching this structure:
             const responseText = result.response.text();
             const geminiJson = JSON.parse(responseText);
 
+            const durationMs = Date.now() - modelStartTime;
+
             if (geminiJson && (geminiJson.productGuess || Array.isArray(geminiJson.ingredients))) {
-              console.log(`✅ Gemini Multimodal (${modelName}) succeeded with product: "${geminiJson.productGuess}" and ${geminiJson.ingredients?.length || 0} ingredients!`);
+              console.log(`✅ [Gemini Vision] '${modelName}' Succeeded in ${durationMs}ms! Product: "${geminiJson.productGuess}", Ingredients: ${geminiJson.ingredients?.length || 0}`);
               
               return res.json({
                 success: true,
                 provider: 'gemini-multimodal',
                 modelUsed: modelName,
                 imageHash: serverImageHash,
+                durationMs,
                 analyzedAt: requestTimestamp,
                 data: formatGeminiScanResult(geminiJson, serverImageHash, parsedImage.data)
               });
             }
           } catch (modelErr) {
-            console.warn(`Gemini model ${modelName} call notice:`, modelErr.message);
+            console.error(`❌ [Gemini Vision Error] Model '${modelName}' failed (${Date.now() - modelStartTime}ms):`, {
+              message: modelErr.message,
+              status: modelErr.status,
+              stack: modelErr.stack
+            });
             lastGeminiError = modelErr;
           }
         }
 
-        // If Gemini was called but failed all candidate models, return explicit error per requirement #6
+        // If Gemini was called but failed all candidate models, return explicit error
+        console.error('❌ [Gemini Vision Error] All candidate models failed. Full last error:', lastGeminiError);
         return res.status(502).json({
           success: false,
           error: `Gemini Multimodal Vision API failed: ${lastGeminiError?.message || 'Unable to parse food packaging label'}. Please ensure a clear, well-lit photo of the packaging is provided.`,
@@ -195,9 +206,9 @@ You MUST strictly output valid JSON matching this structure:
         });
       }
 
-      // If no API key is provided and manual text or preset is requested
+      // If no API key is provided
       if (!apiKey && imageBase64) {
-        // Explicit notice per Requirement #6: Never silently fall back to old/cached data
+        console.warn('⚠️ [Gemini Vision Warning] GEMINI_API_KEY is missing in backend/.env');
         return res.status(503).json({
           success: false,
           error: 'GEMINI_API_KEY is not configured in backend/.env. Add your Gemini API key to enable direct multimodal vision scanning.',
@@ -221,7 +232,7 @@ You MUST strictly output valid JSON matching this structure:
       });
 
     } catch (err) {
-      console.error('Scan controller error:', err);
+      console.error('❌ [Fatal Server Scan Error] Stack trace:', err.stack || err);
       return res.status(500).json({
         success: false,
         error: `Internal server error during label analysis: ${err.message}`
@@ -263,7 +274,7 @@ You MUST strictly output valid JSON matching this structure:
 function formatGeminiScanResult(geminiJson, imageHash, base64Raw) {
   const { productGuess, ingredients = [] } = geminiJson;
 
-  // Groupings required by Requirement #5
+  // Groupings
   const goodGroup = ingredients.filter(i => i.classification === 'good');
   const neutralGroup = ingredients.filter(i => i.classification === 'neutral');
   const harmfulGroup = ingredients.filter(i => i.classification === 'harmful');

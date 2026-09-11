@@ -14,10 +14,12 @@ import {
   Image as ImageIcon,
   Check,
   AlertOctagon,
-  Eye
+  Eye,
+  Minimize2
 } from 'lucide-react';
 import { SAMPLE_PRODUCTS } from '../data/foodvigilData';
 import { apiService } from '../services/apiService';
+import { compressImageForVision } from '../utils/imageCompressor';
 
 export default function Scan() {
   const navigate = useNavigate();
@@ -38,18 +40,23 @@ export default function Scan() {
     navigate('/scan/result', { state: { scanData: preset } });
   };
 
-  // Direct Multimodal Gemini Vision Scan Pipeline
-  const processImageWithGemini = async (imageSource) => {
+  // Direct Multimodal Gemini Vision Scan Pipeline with Image Compression
+  const processImageWithGemini = async (rawImageSource) => {
     setIsProcessing(true);
-    setStatusText('Sending physical packaging photo to Gemini 2.5 Multimodal Vision API...');
+    setStatusText('Optimizing packaging photo for fast AI processing...');
     setErrorMessage('');
 
     try {
-      // Direct call to single multimodal endpoint (with fresh image data)
+      // 1. Client-side Image Compression (max 1280px, quality 0.85) to prevent network lag & timeouts
+      const compressedImage = await compressImageForVision(rawImageSource, 1280, 1280, 0.85);
+
+      setStatusText('Analyzing label with Gemini Multimodal Vision AI...');
+
+      // 2. Direct call to single multimodal endpoint (with fresh image data)
       const response = await apiService.analyzeLabel({
         text: null,
         presetId: null,
-        imagePreview: imageSource,
+        imagePreview: compressedImage,
         productName: productTitleInput || undefined
       });
 
@@ -58,9 +65,8 @@ export default function Scan() {
         setTimeout(() => {
           setIsProcessing(false);
           navigate('/scan/result', { state: { scanData: response.data } });
-        }, 500);
+        }, 400);
       } else {
-        // Requirement #6: Explicit error state, never silently fall back
         setIsProcessing(false);
         setErrorMessage(
           response.error || 'Gemini Vision AI analysis could not complete. Please provide a clear, well-lit photo of the label.'
@@ -76,15 +82,15 @@ export default function Scan() {
   };
 
   // Image Upload handler
-  const handleFileUpload = (e) => {
+  const handleFileUpload = async (e) => {
     const file = e.target.files?.[0];
     if (file) {
       setErrorMessage('');
       const reader = new FileReader();
-      reader.onload = (event) => {
+      reader.onload = async (event) => {
         const dataUrl = event.target.result;
         setUploadedImagePreview(dataUrl);
-        processImageWithGemini(dataUrl);
+        await processImageWithGemini(dataUrl);
       };
       reader.readAsDataURL(file);
     }
@@ -109,7 +115,7 @@ export default function Scan() {
     }
   };
 
-  const handleCapturePhoto = () => {
+  const handleCapturePhoto = async () => {
     if (videoRef.current) {
       const video = videoRef.current;
       const canvas = canvasRef.current || document.createElement('canvas');
@@ -127,7 +133,7 @@ export default function Scan() {
         tracks.forEach(track => track.stop());
       }
 
-      processImageWithGemini(dataUrl);
+      await processImageWithGemini(dataUrl);
     }
   };
 
@@ -168,7 +174,7 @@ export default function Scan() {
       <div className="text-center space-y-2 max-w-2xl mx-auto">
         <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-semibold border border-emerald-200">
           <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-          <span>Gemini 2.5 Multimodal Vision AI</span>
+          <span>Gemini Multimodal Vision AI Engine</span>
         </div>
         <h1 className="font-display font-extrabold text-3xl sm:text-4xl text-forest-900">
           AI Food Label Scanner
@@ -231,15 +237,15 @@ export default function Scan() {
         </div>
       </div>
 
-      {/* ERROR BANNER - REQUIREMENT #6 */}
+      {/* ERROR BANNER */}
       {errorMessage && (
         <div className="p-4 bg-rose-50 border-2 border-rose-300 rounded-2xl flex items-start space-x-3 text-xs text-rose-900 animate-fadeIn">
           <AlertOctagon className="w-5 h-5 text-rose-600 flex-shrink-0 mt-0.5" />
           <div className="space-y-1">
-            <h4 className="font-bold text-sm text-rose-950">Scan Analysis Error</h4>
+            <h4 className="font-bold text-sm text-rose-950">Scan Analysis Notice</h4>
             <p className="text-rose-800 leading-relaxed font-medium">{errorMessage}</p>
             <p className="text-[11px] text-rose-700">
-              Tip: Ensure the packaging is upright, illuminated, and the ingredients list is in focus.
+              Tip: Ensure the packaging label is upright, well-lit, and the ingredients list text is in focus.
             </p>
           </div>
         </div>
@@ -253,7 +259,7 @@ export default function Scan() {
           </div>
           <div className="space-y-1">
             <h3 className="font-display font-extrabold text-lg text-forest-900">
-              Gemini Multimodal Vision Active
+              Gemini Vision AI Engine Processing
             </h3>
             <p className="text-xs text-slate-600 max-w-md mx-auto">{statusText}</p>
           </div>
@@ -280,7 +286,7 @@ export default function Scan() {
                   Click to select food label photo
                 </h3>
                 <p className="text-xs text-slate-500">
-                  Supports JPG, PNG, WEBP packaging photos (Direct Gemini 2.5 Multimodal Analysis)
+                  Auto-compressed & analyzed via Gemini Multimodal Vision API (JPG, PNG, WEBP)
                 </p>
               </div>
               <span className="btn-forest text-xs py-2.5 px-6 inline-flex shadow-sm">

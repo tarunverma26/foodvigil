@@ -47,7 +47,10 @@ export const apiService = {
     // 2. Direct Backend Call (Gemini Multimodal Vision API)
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 25000); // 25s timeout
+      // Increased timeout to 90 seconds (90,000ms) to comfortably allow Gemini Multimodal Vision inference
+      const timeoutId = setTimeout(() => controller.abort(), 90000);
+
+      console.log(`🚀 Dispatching image analysis to ${BACKEND_API_BASE}/scan (Timeout: 90s)...`);
 
       const response = await fetch(`${BACKEND_API_BASE}/scan`, {
         method: 'POST',
@@ -67,12 +70,14 @@ export const apiService = {
       const json = await response.json().catch(() => null);
 
       if (response.ok && json && json.success && json.data) {
+        console.log('✅ Gemini Vision analysis received successfully from backend');
         this.recordScan(json.data);
         return { success: true, data: json.data, provider: json.provider };
       }
 
-      // Explicit error handling from backend per Requirement #6
+      // Explicit error handling from backend
       if (json && json.error) {
+        console.error('❌ Backend returned scan error:', json.error);
         return { 
           success: false, 
           error: json.error,
@@ -81,13 +86,14 @@ export const apiService = {
       }
     } catch (networkErr) {
       if (networkErr.name === 'AbortError') {
+        console.error('❌ Request aborted due to 90s client timeout');
         return {
           success: false,
-          error: 'Gemini Vision AI request timed out. Please check your network connection and retry.',
+          error: 'Gemini Vision AI request timed out after 90 seconds. Please verify your network connection and try again with a compressed image.',
           isExplicitError: true
         };
       }
-      console.warn('Backend connection error:', networkErr.message);
+      console.error('❌ Backend connection network error:', networkErr);
     }
 
     // If text was manually provided, process text
@@ -135,7 +141,7 @@ export const apiService = {
         detectedAdditives: ingredients.filter(i => i.insCode).map(i => i.insCode),
         allergens: cleanText.toLowerCase().includes('wheat') ? ['Contains Wheat (Gluten)'] :
                    cleanText.toLowerCase().includes('milk') ? ['Contains Milk'] :
-                   cleanText.toLowerCase().includes('soy') ? ['Contains Soy'] : ['Review packaging allergen statement'],
+                   cleanText.toLowerCase().includes('soy') ? ['Contains Soy'] : ['Review packaging allergen declaration'],
         nutrition: {
           servingSize: '100g',
           calories: 280,
@@ -158,10 +164,10 @@ export const apiService = {
       return { success: true, data: manualProduct };
     }
 
-    // REQUIREMENT #6: Never silently fall back to old/cached/sample data for uploaded images
+    // Explicit error message if backend is unreachable
     return {
       success: false,
-      error: 'Unable to connect to the backend Gemini Multimodal service on http://localhost:5000. Please ensure the backend server is running.',
+      error: 'Unable to connect to the backend server at http://localhost:5000. Please ensure the backend API server is running.',
       isExplicitError: true
     };
   },
