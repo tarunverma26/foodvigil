@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 
 import { scanController } from './controllers/scan.controller.js';
@@ -67,8 +68,25 @@ app.post(['/api/v1/evidence', '/api/evidence', '/evidence'], evidenceController.
 // 6. User Dashboard Metrics Endpoint
 app.get(['/api/v1/user/dashboard', '/api/user/dashboard', '/user/dashboard'], dashboardController.getDashboard);
 
-// 404 handler
-app.use((req, res) => {
+// Serve Frontend Static Files if dist/ exists (for Single-Service Production on Render / Cloud)
+const distPath = path.join(__dirname, '../../dist');
+if (fs.existsSync(distPath)) {
+  console.log('📦 Serving production frontend build from:', distPath);
+  app.use(express.static(distPath));
+}
+
+// 404 & SPA Client Fallback handler
+app.use((req, res, next) => {
+  // If request is for an API route or upload that does not exist, return JSON 404
+  if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
+    return res.status(404).json({ success: false, message: `Route ${req.originalUrl} not found.` });
+  }
+
+  // Otherwise, serve SPA index.html if dist exists
+  if (fs.existsSync(path.join(distPath, 'index.html'))) {
+    return res.sendFile(path.join(distPath, 'index.html'));
+  }
+
   res.status(404).json({ success: false, message: `Route ${req.originalUrl} not found.` });
 });
 
