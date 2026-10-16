@@ -8,7 +8,23 @@ import {
   INITIAL_EVIDENCE_ITEMS 
 } from '../data/foodvigilData';
 
+// Environment-configurable API base URL (Vite: import.meta.env.VITE_API_URL)
+const ENV_API_URL = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_URL) 
+  ? import.meta.env.VITE_API_URL.replace(/\/+$/, '') 
+  : '';
+
+export const getApiPort = () => {
+  if (ENV_API_URL) {
+    const match = ENV_API_URL.match(/:([0-9]+)/);
+    if (match) return match[1];
+  }
+  return '5000';
+};
+
 const getBackendApiBase = () => {
+  if (ENV_API_URL) {
+    return `${ENV_API_URL}/api/v1`;
+  }
   if (typeof window !== 'undefined') {
     // Relative path leverages Vite dev server proxy or same-origin production backend
     return '/api/v1';
@@ -48,16 +64,24 @@ async function fetchWithFallback(path, options) {
   const v1Path = normalizedPath.startsWith('/api/v1/') ? normalizedPath : normalizedPath.replace(/^\/api\//, '/api/v1/');
 
   const candidateUrls = [
-    // 1. Primary relative serverless route (Vercel / Vite proxy)
+    // 1. Explicit VITE_API_URL if configured
+    ENV_API_URL ? `${ENV_API_URL}${v1Path}` : null,
+    ENV_API_URL ? `${ENV_API_URL}${normalizedPath}` : null,
+
+    // 2. Relative routes (forwarded via Vite dev proxy or same-origin production)
     normalizedPath,
-    // 2. V1 Alias relative route
     v1Path,
-    // 3. Direct LAN / Host IP on port 5000 (if Express dev server running)
-    isBrowser && hostname && hostname !== 'localhost' && !hostname.endsWith('.vercel.app') ? `http://${hostname}:5000${v1Path}` : null,
-    // 4. Direct Loopback IPv4
-    isBrowser && !window.location.hostname.endsWith('.vercel.app') ? `http://127.0.0.1:5000${v1Path}` : null,
-    // 5. Direct localhost
-    isBrowser && !window.location.hostname.endsWith('.vercel.app') ? `http://localhost:5000${v1Path}` : null
+
+    // 3. Direct localhost / loopback fallbacks
+    isBrowser && !window.location.hostname.endsWith('.vercel.app') && !window.location.hostname.endsWith('.onrender.com') 
+      ? `http://localhost:5000${v1Path}` 
+      : null,
+    isBrowser && !window.location.hostname.endsWith('.vercel.app') && !window.location.hostname.endsWith('.onrender.com') 
+      ? `http://127.0.0.1:5000${v1Path}` 
+      : null,
+    isBrowser && hostname && hostname !== 'localhost' && !hostname.endsWith('.vercel.app') && !hostname.endsWith('.onrender.com') 
+      ? `http://${hostname}:5000${v1Path}` 
+      : null
   ].filter(Boolean);
 
   const uniqueUrls = [...new Set(candidateUrls)];
@@ -77,7 +101,7 @@ async function fetchWithFallback(path, options) {
   }
 
   // If all failed, throw the last error
-  throw lastError || new Error('Unable to connect to backend API / serverless functions');
+  throw lastError || new Error(`Unable to connect to backend API server on port ${getApiPort()}`);
 }
 
 export const apiService = {
@@ -148,12 +172,16 @@ export const apiService = {
           isExplicitError: true
         };
       }
-      console.error('❌ Backend connection network error:', networkErr);
-      return {
-        success: false,
-        error: `Unable to connect to the backend server. Please ensure the backend API server is running on port 5000.`,
-        isExplicitError: true
-      };
+      console.warn('⚠️ Backend connection network error:', networkErr);
+
+      // If text was provided, fallback to client-side parsing so user is never blocked
+      if (!text || text.trim().length <= 3) {
+        return {
+          success: false,
+          error: `Unable to connect to the backend server. Please ensure the backend API server is running on port ${getApiPort()}.`,
+          isExplicitError: true
+        };
+      }
     }
 
     // If text was manually provided, process text
@@ -227,7 +255,7 @@ export const apiService = {
     // Explicit error message if backend is unreachable
     return {
       success: false,
-      error: 'Unable to connect to the backend server at http://localhost:5000. Please ensure the backend API server is running.',
+      error: `Unable to connect to the backend server. Please ensure the backend API server is running on port ${getApiPort()}.`,
       isExplicitError: true
     };
   },
